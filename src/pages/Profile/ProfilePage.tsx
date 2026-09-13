@@ -41,6 +41,7 @@ export default function ProfilePage() {
     }
   }, [location.search]);
   const [editing, setEditing] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // وضعیت باز/بسته بودن لیست شهرها
   const [form, setForm] = useState({
@@ -83,7 +84,7 @@ export default function ProfilePage() {
   const handleLogout = () => {
     logout();
     showToast('از حساب خارج شدید', 'info');
-    navigate('/');
+    navigate('/login');
   };
 
   const tabs: { key: Tab; label: string; icon: typeof User }[] = [
@@ -135,11 +136,10 @@ export default function ProfilePage() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                      activeTab === tab.key
-                        ? 'bg-navy-900 text-ivory-100'
-                        : 'text-navy-700 hover:bg-ivory-100'
-                    }`}
+                    className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${activeTab === tab.key
+                      ? 'bg-navy-900 text-ivory-100'
+                      : 'text-navy-700 hover:bg-ivory-100'
+                      }`}
                   >
                     <tab.icon className="h-4 w-4" />
                     {tab.label}
@@ -147,7 +147,7 @@ export default function ProfilePage() {
                 ))}
 
                 <button
-                  onClick={handleLogout}
+                  onClick={() => setShowLogoutModal(true)}
                   className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-500 transition-all hover:bg-red-50"
                 >
                   <LogOut className="h-4 w-4" />
@@ -272,7 +272,7 @@ export default function ProfilePage() {
                       size="md"
                       onClick={() => {
                         setEditing(false);
-                                          }}
+                      }}
                     >
                       انصراف
                     </Button>
@@ -389,6 +389,53 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+          onClick={() => setShowLogoutModal(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-ivory-200 bg-white p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+            dir="rtl"
+          >
+            {/* Icon */}
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-red-50">
+              <LogOut className="h-6 w-6 text-red-500" />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center text-xl font-bold text-navy-900">
+              خروج از حساب
+            </h3>
+
+            {/* Message */}
+            <p className="mt-3 text-center text-sm leading-7 text-gray-500">
+              آیا مطمئنید که می‌خواهید از حساب کاربری خود خارج شوید؟
+            </p>
+
+            {/* Buttons */}
+            <div className="mt-7 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="rounded-xl border border-ivory-300 bg-white px-4 py-3 text-sm font-medium text-navy-900 transition-all hover:bg-ivory-100"
+              >
+                خیر
+              </button>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="rounded-xl bg-navy-900 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-navy-800"
+              >
+                بله، خارج می‌شوم
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
