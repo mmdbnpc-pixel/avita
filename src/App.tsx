@@ -11,6 +11,7 @@ import { FavoritesProvider } from '@/context/FavoritesContext';
 import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { AdminProvider } from '@/context/AdminContext';
+import SupportPage from '@/pages/Support/SupportPage';
 
 import Layout from '@/components/layout/Layout';
 
@@ -332,7 +333,9 @@ export default function App() {
                                     <NotFoundPage />
                                   }
                                 />
+                              
 
+                              <Route path="/support" element={<SupportPage />} />
                               </Routes>
                             </Suspense>
                           </Layout>

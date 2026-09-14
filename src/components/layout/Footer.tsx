@@ -7,7 +7,7 @@ const quickLinks = [
   { to: '/about', label: 'درباره ما' },
   { to: '/articles', label: 'مقالات' },
   // نکته: مقدار to برای تماس با ما قبلاً /cart بود، اگر اشتباه تایپی است آن را به /contact تغییر دهید.
-  { to: '/contact', label: 'تماس با ما' }, 
+  { to: '/Support ', label: 'پشتیبانی' }, 
 ];
 
 export default function Footer() {
@@ -31,7 +31,7 @@ export default function Footer() {
               <span className="text-sm font-medium text-gold-400">
                 اویتا
               </span>
-            </div>
+            </div>اس
 
             {/* کاهش leading-7 به leading-6 */}
             <p className="mx-auto max-w-md text-sm leading-6 text-ivory-300">
