@@ -95,9 +95,8 @@ export default function ProductDetailPage() {
                 <button
                   key={i}
                   onClick={() => setActiveImage(i)}
-                  className={`aspect-square overflow-hidden rounded-xl border-2 transition-all ${
-                    activeImage === i ? 'border-navy-900' : 'border-transparent opacity-60 hover:opacity-100'
-                  }`}
+                  className={`aspect-square overflow-hidden rounded-xl border-2 transition-all ${activeImage === i ? 'border-navy-900' : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
                 >
                   <img src={img} alt="" className="h-full w-full object-cover" loading="lazy" />
                 </button>
@@ -171,9 +170,8 @@ export default function ProductDetailPage() {
                   toggleFavorite(product.id);
                   showToast(fav ? 'از علاقه‌مندی‌ها حذف شد' : 'به علاقه‌مندی‌ها اضافه شد', 'info');
                 }}
-                className={`flex h-12 w-12 items-center justify-center rounded-full border transition-all ${
-                  fav ? 'border-red-500 bg-red-50 text-red-500' : 'border-ivory-300 text-navy-700 hover:border-navy-900'
-                }`}
+                className={`flex h-12 w-12 items-center justify-center rounded-full border transition-all ${fav ? 'border-red-500 bg-red-50 text-red-500' : 'border-ivory-300 text-navy-700 hover:border-navy-900'
+                  }`}
               >
                 <Heart className={`h-5 w-5 ${fav ? 'fill-current' : ''}`} />
               </button>
@@ -216,11 +214,10 @@ export default function ProductDetailPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as typeof activeTab)}
-                className={`rounded-full px-6 py-2.5 text-sm font-medium transition-all ${
-                  activeTab === tab.key
-                    ? 'bg-navy-900 text-ivory-100'
-                    : 'text-navy-700 hover:bg-ivory-200'
-                }`}
+                className={`rounded-full px-6 py-2.5 text-sm font-medium transition-all ${activeTab === tab.key
+                  ? 'bg-navy-900 text-ivory-100'
+                  : 'text-navy-700 hover:bg-ivory-200'
+                  }`}
               >
                 {tab.label}
               </button>
@@ -266,7 +263,7 @@ export default function ProductDetailPage() {
               </div>
             )}
             {activeTab === 'reviews' && (
-              <div className="animate-fade-in space-y-8">
+              <div className="space-y-8">
                 {isAuthenticated ? (
                   <form
                     onSubmit={(event) => {
@@ -325,7 +322,28 @@ export default function ProductDetailPage() {
                       onChange={(event) => setReviewText(event.target.value)}
                       rows={4}
                       placeholder="نظر خود را درباره این محصول بنویسید..."
-                      className="w-full rounded-xl border border-ivory-300 bg-white px-4 py-3 text-sm text-navy-900 outline-none focus:ring-2 focus:ring-navy-900/10"
+                      className="
+    block
+    w-full
+    resize-none
+    rounded-xl
+    border
+    border-ivory-300
+    bg-white
+    px-4
+    py-3
+    text-sm
+    leading-7
+    text-navy-900
+    outline-none
+    transition-colors
+    duration-200
+    placeholder:text-gray-400
+    focus:border-navy-900/30
+    focus:bg-white
+    focus:ring-2
+    focus:ring-navy-900/10
+  "
                     />
                     <Button type="submit" className="mt-4">
                       {editingReviewId ? 'ذخیره تغییرات' : 'ثبت نظر'}

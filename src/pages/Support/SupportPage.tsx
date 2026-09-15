@@ -1,9 +1,5 @@
-
 import { useState } from 'react';
-import {
-    ChevronDown,
-    Headphones,
-} from 'lucide-react';
+import { ChevronDown, Headphones } from 'lucide-react';
 
 const faqs = [
     {
@@ -36,49 +32,10 @@ const faqs = [
 export default function SupportPage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        subject: '',
-        message: '',
-    });
-
-    const [submitted, setSubmitted] = useState(false);
-
-    const handleChange = (
-        e: React.ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-    ) => {
-        const { name, value } = e.target;
-
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        setSubmitted(true);
-
-        setFormData({
-            name: '',
-            phone: '',
-            subject: '',
-            message: '',
-        });
-
-        setTimeout(() => {
-            setSubmitted(false);
-        }, 4000);
-    };
-
     return (
         <main
             dir="rtl"
-            className="min-h-screen bg-white text-navy-950 pt-20"
+            className="min-h-screen bg-white pt-20 text-navy-950"
         >
             {/* ========================================================= */}
             {/* HERO */}
@@ -107,10 +64,10 @@ export default function SupportPage() {
                             اکسسوری برای شما فراهم کنیم. اگر سوال یا مشکلی دارید،
                             با ما در ارتباط باشید.
                         </p>
+
                     </div>
                 </div>
             </section>
-
 
             {/* ========================================================= */}
             {/* LIGHT BACKGROUND AREA */}
@@ -119,9 +76,7 @@ export default function SupportPage() {
 
             <div className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-blue-50/60">
 
-                {/* ===================================================== */}
-                {/* GLOBAL SOFT BACKGROUND SHAPES */}
-                {/* ===================================================== */}
+                {/* Soft Background Shapes */}
 
                 <div className="pointer-events-none absolute -right-32 top-0 h-80 w-80 rounded-full bg-blue-100/40 blur-3xl" />
 
@@ -129,76 +84,107 @@ export default function SupportPage() {
 
                 <div className="pointer-events-none absolute left-1/3 top-1/2 h-72 w-72 rounded-full bg-blue-50/60 blur-3xl" />
 
-
                 {/* ===================================================== */}
                 {/* CONTACT / SUPPORT BANNER */}
                 {/* ===================================================== */}
 
                 <section
                     dir="rtl"
-                    className="relative overflow-hidden px-6 py-16 sm:py-20"
+                    className="relative overflow-hidden px-4 py-12 sm:px-6 sm:py-16 md:py-20"
                 >
                     <div className="container-luxury relative">
 
                         <div
                             className="
-                                relative mx-auto max-w-6xl
+                                relative mx-auto
+                                max-w-6xl
                                 overflow-hidden
-                                rounded-[2.5rem]
+                                rounded-[2rem]
                                 border border-slate-200/80
                                 bg-white
                                 shadow-[0_25px_80px_rgba(15,23,42,0.10)]
+                                sm:rounded-[2.5rem]
                             "
                         >
 
                             {/* Decorative Bottom Line */}
+
                             <div
                                 className="
-                                    absolute bottom-10 left-10 right-10
+                                    absolute
+                                    bottom-8
+                                    left-8
+                                    right-8
                                     h-px
                                     bg-gradient-to-l
                                     from-transparent
                                     via-blue-200
                                     to-transparent
+                                    sm:bottom-10
+                                    sm:left-10
+                                    sm:right-10
                                 "
                             />
 
+                            {/* ================================================= */}
+                            {/* MAIN GRID */}
+                            {/* ================================================= */}
+
                             <div
                                 className="
-                                    grid items-center gap-10
-                                    p-7
-                                    sm:p-10
+                                    grid
+                                    gap-8
+                                    p-6
+                                    sm:gap-10
+                                    sm:p-8
                                     md:grid-cols-2
-                                    md:p-14
+                                    md:gap-10
+                                    md:p-12
                                     lg:p-16
                                 "
                             >
 
                                 {/* ================================================= */}
                                 {/* TEXT */}
+                                {/* Mobile: First */}
+                                {/* Desktop: Right/Original position */}
                                 {/* ================================================= */}
 
-                                <div className="relative z-10 text-center md:text-right">
+                                <div
+                                    className="
+                                        relative
+                                        z-10
+                                        order-1
+                                        text-center
+                                        md:col-start-1
+                                        md:row-start-1
+                                        md:text-right
+                                    "
+                                >
 
                                     {/* Small Label */}
-                                    <div className="mb-6 flex items-center justify-center gap-3 md:justify-start">
+
+                                    <div className="mb-5 flex items-center justify-center gap-3 md:justify-start">
+
                                         <span className="text-[11px] font-medium tracking-[0.35em] text-blue-400">
                                             SUPPORT
                                         </span>
 
-                                        <span className="h-px w-16 bg-blue-200" />
+                                        <span className="h-px w-12 bg-blue-200 sm:w-16" />
+
                                     </div>
 
-
                                     {/* Title */}
+
                                     <h2
                                         className="
-                                            mb-6
-                                            text-3xl
+                                            mb-5
+                                            text-2xl
                                             font-bold
                                             leading-[1.5]
                                             text-navy-950
-                                            sm:text-4xl
+                                            sm:text-3xl
+                                            md:text-4xl
                                             lg:text-5xl
                                         "
                                     >
@@ -208,8 +194,8 @@ export default function SupportPage() {
                                         </span>
                                     </h2>
 
-
                                     {/* Description */}
+
                                     <p
                                         className="
                                             mx-auto
@@ -244,95 +230,41 @@ export default function SupportPage() {
                                         پاسخگوی شما خواهند بود.
                                     </p>
 
-
-                                    {/* WhatsApp Button */}
-                                    <div className="mt-8 flex justify-center md:justify-start">
-                                        <a
-                                            href="https://wa.me/message/6JH4LAKY3KP7B1"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="
-        group
-        inline-flex
-        items-center
-        gap-3
-        rounded-full
-        bg-navy-950
-        px-6
-        py-3.5
-        text-sm
-        font-medium
-        text-white
-        shadow-lg
-        shadow-navy-950/10
-        transition-all
-        duration-300
-        hover:-translate-y-1
-        hover:shadow-xl
-    "
-                                        >
-                                            <span>شروع گفتگو در واتساپ</span>
-
-                                            <span
-                                                className="
-            flex
-            h-8
-            w-8
-            items-center
-            justify-center
-            rounded-full
-            bg-white/10
-            transition-transform
-            duration-300
-            group-hover:-translate-x-1
-        "
-                                            >
-                                                <svg
-                                                    viewBox="0 0 24 24"
-                                                    className="h-4 w-4"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="1.8"
-                                                >
-                                                    <path
-                                                        d="M5 12h13M13 6l6 6-6 6"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    />
-                                                </svg>
-                                            </span>
-                                        </a>
-                                    </div>
                                 </div>
-
 
                                 {/* ================================================= */}
                                 {/* VISUAL */}
+                                {/* Mobile: Second */}
+                                {/* Desktop: Left/Original position */}
                                 {/* ================================================= */}
 
                                 <div
                                     className="
                                         relative
+                                        order-2
                                         flex
-                                        min-h-[300px]
+                                        min-h-[260px]
                                         items-center
                                         justify-center
+                                        md:col-start-2
+                                        md:row-start-1
                                         md:min-h-[360px]
                                     "
                                 >
 
                                     {/* Main Soft Card */}
+
                                     <div
                                         className="
                                             relative
                                             flex
-                                            h-[250px]
+                                            h-[230px]
                                             w-full
                                             max-w-[430px]
                                             items-center
                                             justify-center
                                             overflow-hidden
-                                            rounded-[2rem]
+                                            rounded-[1.75rem]
                                             border
                                             border-blue-100
                                             bg-gradient-to-br
@@ -340,10 +272,13 @@ export default function SupportPage() {
                                             via-white
                                             to-slate-100
                                             shadow-inner
+                                            sm:h-[250px]
+                                            sm:rounded-[2rem]
                                         "
                                     >
 
                                         {/* Decorative Circle */}
+
                                         <div
                                             className="
                                                 absolute
@@ -368,8 +303,8 @@ export default function SupportPage() {
                                             "
                                         />
 
-
                                         {/* Decorative Wave */}
+
                                         <svg
                                             className="
                                                 absolute
@@ -390,15 +325,15 @@ export default function SupportPage() {
                                             />
                                         </svg>
 
-
                                         {/* Phone Circle */}
+
                                         <div
                                             className="
                                                 relative
                                                 z-10
                                                 flex
-                                                h-36
-                                                w-36
+                                                h-28
+                                                w-28
                                                 items-center
                                                 justify-center
                                                 rounded-full
@@ -406,12 +341,15 @@ export default function SupportPage() {
                                                 from-blue-900
                                                 to-navy-950
                                                 shadow-[0_25px_50px_rgba(15,23,42,0.25)]
-                                                sm:h-40
-                                                sm:w-40
+                                                sm:h-36
+                                                sm:w-36
+                                                md:h-40
+                                                md:w-40
                                             "
                                         >
 
                                             {/* Inner Border */}
+
                                             <div
                                                 className="
                                                     absolute
@@ -422,18 +360,20 @@ export default function SupportPage() {
                                                 "
                                             />
 
-
                                             {/* Phone Icon */}
+
                                             <svg
                                                 viewBox="0 0 24 24"
                                                 className="
                                                     relative
                                                     z-10
-                                                    h-16
-                                                    w-16
+                                                    h-12
+                                                    w-12
                                                     text-white
-                                                    sm:h-20
-                                                    sm:w-20
+                                                    sm:h-16
+                                                    sm:w-16
+                                                    md:h-20
+                                                    md:w-20
                                                 "
                                                 fill="none"
                                                 stroke="currentColor"
@@ -459,6 +399,7 @@ export default function SupportPage() {
                                                 />
 
                                                 {/* Signal */}
+
                                                 <path
                                                     d="M15.5 4.5a5 5 0 0 1 4 4"
                                                     strokeLinecap="round"
@@ -470,40 +411,129 @@ export default function SupportPage() {
                                                     opacity="0.65"
                                                 />
                                             </svg>
+
                                         </div>
 
-
                                         {/* Floating Dots */}
+
                                         <div
                                             className="
                                                 absolute
-                                                right-10
-                                                top-10
+                                                right-8
+                                                top-8
                                                 h-3
                                                 w-3
                                                 rounded-full
                                                 bg-blue-300/70
+                                                sm:right-10
+                                                sm:top-10
                                             "
                                         />
 
                                         <div
                                             className="
                                                 absolute
-                                                bottom-10
-                                                left-14
+                                                bottom-8
+                                                left-10
                                                 h-2
                                                 w-2
                                                 rounded-full
                                                 bg-slate-300
+                                                sm:bottom-10
+                                                sm:left-14
                                             "
                                         />
+
                                     </div>
+
                                 </div>
+
+                                {/* ================================================= */}
+                                {/* WHATSAPP BUTTON */}
+                                {/* Mobile: Third / BELOW IMAGE */}
+                                {/* Desktop: Under TEXT */}
+                                {/* ================================================= */}
+
+                                <div
+                                    className="
+                                        order-3
+                                        flex
+                                        justify-center
+                                        md:col-start-1
+                                        md:row-start-1
+                                        md:mt-auto
+                                        md:justify-start
+                                        md:self-end
+                                    "
+                                >
+                                    <a
+                                        href="https://wa.me/message/6JH4LAKY3KP7B1"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="
+                                            group
+                                            inline-flex
+                                            w-full
+                                            items-center
+                                            justify-center
+                                            gap-3
+                                            rounded-full
+                                            bg-navy-950
+                                            px-6
+                                            py-3.5
+                                            text-sm
+                                            font-medium
+                                            text-white
+                                            shadow-lg
+                                            shadow-navy-950/10
+                                            transition-all
+                                            duration-300
+                                            hover:-translate-y-1
+                                            hover:shadow-xl
+                                            sm:w-auto
+                                        "
+                                    >
+
+                                        <span>
+                                            شروع گفتگو در واتساپ
+                                        </span>
+
+                                        <span
+                                            className="
+                                                flex
+                                                h-8
+                                                w-8
+                                                items-center
+                                                justify-center
+                                                rounded-full
+                                                bg-white/10
+                                                transition-transform
+                                                duration-300
+                                                group-hover:-translate-x-1
+                                            "
+                                        >
+                                            <svg
+                                                viewBox="0 0 24 24"
+                                                className="h-4 w-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="1.8"
+                                            >
+                                                <path
+                                                    d="M5 12h13M13 6l6 6-6 6"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                            </svg>
+                                        </span>
+
+                                    </a>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </section>
-
 
                 {/* ===================================================== */}
                 {/* FAQ */}
@@ -514,23 +544,25 @@ export default function SupportPage() {
                     className="
                         relative
                         overflow-hidden
-                        px-6
-                        py-14
-                        sm:px-8
+                        px-4
+                        py-12
+                        sm:px-6
+                        sm:py-14
                         md:py-20
                         lg:px-10
                     "
                 >
-
                     <div className="container-luxury relative">
 
                         <div className="mx-auto max-w-3xl">
 
                             {/* FAQ Header */}
-                            <div className="mb-10 text-center">
+
+                            <div className="mb-8 text-center sm:mb-10">
 
                                 <div className="mx-auto mb-4 flex items-center justify-center gap-3">
-                                    <span className="h-px w-12 bg-blue-200" />
+
+                                    <span className="h-px w-10 bg-blue-200 sm:w-12" />
 
                                     <span
                                         className="
@@ -543,9 +575,9 @@ export default function SupportPage() {
                                         FAQ
                                     </span>
 
-                                    <span className="h-px w-12 bg-blue-200" />
-                                </div>
+                                    <span className="h-px w-10 bg-blue-200 sm:w-12" />
 
+                                </div>
 
                                 <h2
                                     className="
@@ -557,7 +589,6 @@ export default function SupportPage() {
                                 >
                                     سوالات متداول
                                 </h2>
-
 
                                 <p
                                     className="
@@ -573,10 +604,11 @@ export default function SupportPage() {
                                     قرار داده‌ایم تا بتوانید سریع‌تر اطلاعات
                                     مورد نیاز خود را پیدا کنید.
                                 </p>
+
                             </div>
 
-
                             {/* FAQ Items */}
+
                             <div className="space-y-3">
 
                                 {faqs.map((faq, index) => {
@@ -601,11 +633,14 @@ export default function SupportPage() {
                                         >
 
                                             {/* Question */}
+
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     setOpenFaq(
-                                                        isOpen ? null : index
+                                                        isOpen
+                                                            ? null
+                                                            : index
                                                     )
                                                 }
                                                 className="
@@ -614,9 +649,11 @@ export default function SupportPage() {
                                                     items-center
                                                     justify-between
                                                     gap-4
-                                                    px-5
-                                                    py-5
+                                                    px-4
+                                                    py-4
                                                     text-right
+                                                    sm:px-5
+                                                    sm:py-5
                                                 "
                                                 aria-expanded={isOpen}
                                             >
@@ -632,8 +669,8 @@ export default function SupportPage() {
                                                     {faq.question}
                                                 </span>
 
-
                                                 {/* Arrow */}
+
                                                 <span
                                                     className="
                                                         flex
@@ -648,29 +685,33 @@ export default function SupportPage() {
                                                 >
                                                     <ChevronDown
                                                         className={`
-                                                            h-4 w-4
+                                                            h-4
+                                                            w-4
                                                             text-blue-700
                                                             transition-transform
                                                             duration-300
-                                                            ${isOpen
-                                                                ? 'rotate-180'
-                                                                : ''
+                                                            ${
+                                                                isOpen
+                                                                    ? 'rotate-180'
+                                                                    : ''
                                                             }
                                                         `}
                                                     />
                                                 </span>
+
                                             </button>
 
-
                                             {/* Answer */}
+
                                             <div
                                                 className={`
                                                     grid
                                                     transition-all
                                                     duration-300
-                                                    ${isOpen
-                                                        ? 'grid-rows-[1fr] opacity-100'
-                                                        : 'grid-rows-[0fr] opacity-0'
+                                                    ${
+                                                        isOpen
+                                                            ? 'grid-rows-[1fr] opacity-100'
+                                                            : 'grid-rows-[0fr] opacity-0'
                                                     }
                                                 `}
                                             >
@@ -680,12 +721,13 @@ export default function SupportPage() {
                                                         className="
                                                             border-t
                                                             border-slate-100
-                                                            px-5
+                                                            px-4
                                                             pb-5
                                                             pt-4
                                                             text-sm
                                                             leading-7
                                                             text-slate-500
+                                                            sm:px-5
                                                         "
                                                     >
                                                         {faq.answer}
@@ -693,11 +735,13 @@ export default function SupportPage() {
 
                                                 </div>
                                             </div>
+
                                         </div>
                                     );
                                 })}
 
                             </div>
+
                         </div>
                     </div>
                 </section>
@@ -706,4 +750,3 @@ export default function SupportPage() {
         </main>
     );
 }
-

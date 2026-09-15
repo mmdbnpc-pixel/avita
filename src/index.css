@@ -30,13 +30,16 @@
     width: 8px;
     height: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: #f1ede4;
   }
+
   ::-webkit-scrollbar-thumb {
     background: #06184F;
     border-radius: 4px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: #0d1c4f;
   }
@@ -46,8 +49,34 @@
     font-feature-settings: 'ss01';
   }
 
-  input, textarea, select, button {
+  input,
+  textarea,
+  select,
+  button {
     font-family: inherit;
+  }
+
+  @media (max-width: 767px) {
+
+    input,
+    textarea,
+    select {
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+      filter: none !important;
+      opacity: 1 !important;
+      background-color: #ffffff !important;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    textarea:focus {
+      filter: none !important;
+      opacity: 1 !important;
+      background-color: #ffffff !important;
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+    }
   }
 }
 
@@ -59,6 +88,7 @@
   .skeleton {
     @apply relative overflow-hidden bg-ivory-200;
   }
+
   .skeleton::after {
     content: '';
     @apply absolute inset-0;
@@ -87,7 +117,7 @@
   }
 
   .hover-lift {
-    @apply transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1;
+    @apply transition-all duration-500 ease-[cubic-bezier(0.22, 1, 0.36, 1)] hover:-translate-y-1;
   }
 
   .link-underline {
@@ -99,6 +129,7 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -119,6 +150,7 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type=number] {
   -moz-appearance: textfield;
 }
