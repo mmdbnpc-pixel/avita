@@ -6,7 +6,7 @@ import {
   ShoppingBag,
   ArrowLeft,
   TrendingUp,
-  Clock,
+  XCircle,
   CheckCircle,
   Truck,
 } from 'lucide-react';
@@ -44,9 +44,6 @@ export default function DashboardPage() {
 
   /*
    * تعداد کل سفارش‌ها
-   *
-   * سفارش‌های لغو شده نیز در تعداد کل
-   * سفارش‌ها باقی می‌مانند.
    */
   const totalOrders =
     orders.length;
@@ -54,14 +51,11 @@ export default function DashboardPage() {
   /*
    * فروش کل
    *
-   * pending_payment:
-   * هنوز پرداخت نشده و وارد فروش نمی‌شود.
+   * سفارش‌های لغو شده
+   * از فروش کل حذف می‌شوند.
    *
-   * cancelled:
-   * لغو شده و از فروش کم می‌شود.
-   *
-   * سایر سفارش‌ها:
-   * در فروش کل محاسبه می‌شوند.
+   * سفارش‌های در انتظار پرداخت نیز
+   * هنوز فروش قطعی محسوب نمی‌شوند.
    */
   const totalSales =
     orders
@@ -82,17 +76,17 @@ export default function DashboardPage() {
       );
 
   /*
-   * در انتظار پرداخت
+   * سفارش‌های لغو شده
    */
-  const pendingOrders =
+  const cancelledOrders =
     orders.filter(
       (order) =>
         order.status ===
-        'pending_payment'
+        'cancelled'
     ).length;
 
   /*
-   * در حال آماده‌سازی
+   * سفارش‌های در حال آماده‌سازی
    */
   const preparingOrders =
     orders.filter(
@@ -102,7 +96,7 @@ export default function DashboardPage() {
     ).length;
 
   /*
-   * ارسال شده
+   * سفارش‌های ارسال شده
    */
   const shippedOrders =
     orders.filter(
@@ -112,7 +106,7 @@ export default function DashboardPage() {
     ).length;
 
   /*
-   * تحویل داده شده
+   * سفارش‌های تحویل داده شده
    */
   const completedOrders =
     orders.filter(
@@ -258,22 +252,6 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
-          {/* در انتظار پرداخت */}
-
-          <StatusCard
-            icon={
-              <Clock size={21} />
-            }
-            title={
-              orderStatusLabels
-                .pending_payment
-            }
-            value={
-              pendingOrders
-            }
-            iconClass="bg-yellow-50 text-yellow-600"
-          />
-
           {/* در حال آماده‌سازی */}
 
           <StatusCard
@@ -323,6 +301,23 @@ export default function DashboardPage() {
             }
             iconClass="bg-green-50 text-green-600"
           />
+
+          {/* لغو شده */}
+
+          <StatusCard
+            icon={
+              <XCircle size={21} />
+            }
+            title={
+              orderStatusLabels
+                .cancelled
+            }
+            value={
+              cancelledOrders
+            }
+            iconClass="bg-red-50 text-red-600"
+          />
+
         </div>
       </section>
 
@@ -439,9 +434,6 @@ export default function DashboardPage() {
                             'cancelled'
                               ? 'bg-red-50 text-red-600'
                               : order.status ===
-                                'pending_payment'
-                              ? 'bg-yellow-50 text-yellow-700'
-                              : order.status ===
                                 'preparing'
                               ? 'bg-blue-50 text-blue-700'
                               : order.status ===
@@ -450,6 +442,9 @@ export default function DashboardPage() {
                               : order.status ===
                                 'delivered'
                               ? 'bg-green-50 text-green-700'
+                              : order.status ===
+                                'pending_payment'
+                              ? 'bg-yellow-50 text-yellow-700'
                               : 'bg-gray-100 text-gray-700'
                           }`}
                         >
@@ -484,6 +479,7 @@ export default function DashboardPage() {
                   )
                 )}
               </tbody>
+
             </table>
           </div>
         )}
