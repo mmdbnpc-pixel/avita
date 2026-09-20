@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { ChevronDown, Headphones } from 'lucide-react';
 
+const WHATSAPP_URL = 'https://wa.me/message/6JH4LAKY3KP7B1';
+
 const faqs = [
     {
         question: 'چگونه می‌توانم سفارش خود را پیگیری کنم؟',
@@ -32,6 +34,10 @@ const faqs = [
 export default function SupportPage() {
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
+    const handleWhatsAppClick = () => {
+        window.open(WHATSAPP_URL, '_blank', 'noopener,noreferrer');
+    };
+
     return (
         <main
             dir="rtl"
@@ -42,7 +48,7 @@ export default function SupportPage() {
             {/* ========================================================= */}
 
             <section className="relative overflow-hidden bg-navy-950">
-                <div className="absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-950 to-navy-900" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-950 to-navy-900" />
 
                 <div className="relative container-luxury px-6 py-20 sm:px-8 md:py-24 lg:px-10">
                     <div className="mx-auto max-w-3xl text-center">
@@ -71,18 +77,53 @@ export default function SupportPage() {
 
             {/* ========================================================= */}
             {/* LIGHT BACKGROUND AREA */}
-            {/* CONTACT + FAQ */}
             {/* ========================================================= */}
 
             <div className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-blue-50/60">
 
                 {/* Soft Background Shapes */}
 
-                <div className="pointer-events-none absolute -right-32 top-0 h-80 w-80 rounded-full bg-blue-100/40 blur-3xl" />
+                <div
+                    className="
+                        pointer-events-none
+                        absolute
+                        -right-32
+                        top-0
+                        h-80
+                        w-80
+                        rounded-full
+                        bg-blue-100/40
+                        blur-3xl
+                    "
+                />
 
-                <div className="pointer-events-none absolute -bottom-40 -left-32 h-96 w-96 rounded-full bg-slate-200/40 blur-3xl" />
+                <div
+                    className="
+                        pointer-events-none
+                        absolute
+                        -bottom-40
+                        -left-32
+                        h-96
+                        w-96
+                        rounded-full
+                        bg-slate-200/40
+                        blur-3xl
+                    "
+                />
 
-                <div className="pointer-events-none absolute left-1/3 top-1/2 h-72 w-72 rounded-full bg-blue-50/60 blur-3xl" />
+                <div
+                    className="
+                        pointer-events-none
+                        absolute
+                        left-1/3
+                        top-1/2
+                        h-72
+                        w-72
+                        rounded-full
+                        bg-blue-50/60
+                        blur-3xl
+                    "
+                />
 
                 {/* ===================================================== */}
                 {/* CONTACT / SUPPORT BANNER */}
@@ -96,11 +137,13 @@ export default function SupportPage() {
 
                         <div
                             className="
-                                relative mx-auto
+                                relative
+                                mx-auto
                                 max-w-6xl
                                 overflow-hidden
                                 rounded-[2rem]
-                                border border-slate-200/80
+                                border
+                                border-slate-200/80
                                 bg-white
                                 shadow-[0_25px_80px_rgba(15,23,42,0.10)]
                                 sm:rounded-[2.5rem]
@@ -111,6 +154,7 @@ export default function SupportPage() {
 
                             <div
                                 className="
+                                    pointer-events-none
                                     absolute
                                     bottom-8
                                     left-8
@@ -132,6 +176,8 @@ export default function SupportPage() {
 
                             <div
                                 className="
+                                    relative
+                                    z-10
                                     grid
                                     gap-8
                                     p-6
@@ -146,8 +192,6 @@ export default function SupportPage() {
 
                                 {/* ================================================= */}
                                 {/* TEXT */}
-                                {/* Mobile: First */}
-                                {/* Desktop: Right/Original position */}
                                 {/* ================================================= */}
 
                                 <div
@@ -162,8 +206,6 @@ export default function SupportPage() {
                                     "
                                 >
 
-                                    {/* Small Label */}
-
                                     <div className="mb-5 flex items-center justify-center gap-3 md:justify-start">
 
                                         <span className="text-[11px] font-medium tracking-[0.35em] text-blue-400">
@@ -173,8 +215,6 @@ export default function SupportPage() {
                                         <span className="h-px w-12 bg-blue-200 sm:w-16" />
 
                                     </div>
-
-                                    {/* Title */}
 
                                     <h2
                                         className="
@@ -193,8 +233,6 @@ export default function SupportPage() {
                                             پشتیبانی اویتا
                                         </span>
                                     </h2>
-
-                                    {/* Description */}
 
                                     <p
                                         className="
@@ -234,13 +272,12 @@ export default function SupportPage() {
 
                                 {/* ================================================= */}
                                 {/* VISUAL */}
-                                {/* Mobile: Second */}
-                                {/* Desktop: Left/Original position */}
                                 {/* ================================================= */}
 
                                 <div
                                     className="
                                         relative
+                                        z-10
                                         order-2
                                         flex
                                         min-h-[260px]
@@ -251,8 +288,6 @@ export default function SupportPage() {
                                         md:min-h-[360px]
                                     "
                                 >
-
-                                    {/* Main Soft Card */}
 
                                     <div
                                         className="
@@ -281,6 +316,7 @@ export default function SupportPage() {
 
                                         <div
                                             className="
+                                                pointer-events-none
                                                 absolute
                                                 -right-20
                                                 -top-20
@@ -293,6 +329,7 @@ export default function SupportPage() {
 
                                         <div
                                             className="
+                                                pointer-events-none
                                                 absolute
                                                 -bottom-24
                                                 -left-16
@@ -307,6 +344,7 @@ export default function SupportPage() {
 
                                         <svg
                                             className="
+                                                pointer-events-none
                                                 absolute
                                                 bottom-0
                                                 left-0
@@ -348,10 +386,9 @@ export default function SupportPage() {
                                             "
                                         >
 
-                                            {/* Inner Border */}
-
                                             <div
                                                 className="
+                                                    pointer-events-none
                                                     absolute
                                                     inset-2
                                                     rounded-full
@@ -359,8 +396,6 @@ export default function SupportPage() {
                                                     border-white/10
                                                 "
                                             />
-
-                                            {/* Phone Icon */}
 
                                             <svg
                                                 viewBox="0 0 24 24"
@@ -398,8 +433,6 @@ export default function SupportPage() {
                                                     strokeLinejoin="round"
                                                 />
 
-                                                {/* Signal */}
-
                                                 <path
                                                     d="M15.5 4.5a5 5 0 0 1 4 4"
                                                     strokeLinecap="round"
@@ -418,6 +451,7 @@ export default function SupportPage() {
 
                                         <div
                                             className="
+                                                pointer-events-none
                                                 absolute
                                                 right-8
                                                 top-8
@@ -432,6 +466,7 @@ export default function SupportPage() {
 
                                         <div
                                             className="
+                                                pointer-events-none
                                                 absolute
                                                 bottom-8
                                                 left-10
@@ -450,12 +485,12 @@ export default function SupportPage() {
 
                                 {/* ================================================= */}
                                 {/* WHATSAPP BUTTON */}
-                                {/* Mobile: Third / BELOW IMAGE */}
-                                {/* Desktop: Under TEXT */}
                                 {/* ================================================= */}
 
                                 <div
                                     className="
+                                        relative
+                                        z-50
                                         order-3
                                         flex
                                         justify-center
@@ -466,17 +501,21 @@ export default function SupportPage() {
                                         md:self-end
                                     "
                                 >
-                                    <a
-                                        href="https://wa.me/message/6JH4LAKY3KP7B1"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <button
+                                        type="button"
+                                        onClick={handleWhatsAppClick}
+                                        aria-label="شروع گفتگو در واتساپ"
                                         className="
                                             group
+                                            relative
+                                            z-50
                                             inline-flex
                                             w-full
+                                            cursor-pointer
                                             items-center
                                             justify-center
                                             gap-3
+                                            overflow-hidden
                                             rounded-full
                                             bg-navy-950
                                             px-6
@@ -486,35 +525,77 @@ export default function SupportPage() {
                                             text-white
                                             shadow-lg
                                             shadow-navy-950/10
+                                            outline-none
                                             transition-all
                                             duration-300
                                             hover:-translate-y-1
+                                            hover:scale-[1.02]
                                             hover:shadow-xl
+                                            hover:shadow-navy-950/20
+                                            active:translate-y-0
+                                            active:scale-[0.97]
+                                            focus-visible:ring-2
+                                            focus-visible:ring-blue-400
+                                            focus-visible:ring-offset-2
                                             sm:w-auto
                                         "
                                     >
 
-                                        <span>
+                                        {/* Button Shine */}
+
+                                        <span
+                                            aria-hidden="true"
+                                            className="
+                                                pointer-events-none
+                                                absolute
+                                                inset-y-0
+                                                -left-1/2
+                                                z-0
+                                                w-1/3
+                                                -skew-x-12
+                                                bg-gradient-to-r
+                                                from-transparent
+                                                via-white/20
+                                                to-transparent
+                                                opacity-0
+                                                transition-all
+                                                duration-700
+                                                group-hover:left-[120%]
+                                                group-hover:opacity-100
+                                            "
+                                        />
+
+                                        <span className="relative z-10">
                                             شروع گفتگو در واتساپ
                                         </span>
 
                                         <span
                                             className="
+                                                relative
+                                                z-10
                                                 flex
                                                 h-8
                                                 w-8
+                                                shrink-0
                                                 items-center
                                                 justify-center
                                                 rounded-full
                                                 bg-white/10
-                                                transition-transform
+                                                transition-all
                                                 duration-300
                                                 group-hover:-translate-x-1
+                                                group-hover:bg-white/15
                                             "
                                         >
                                             <svg
                                                 viewBox="0 0 24 24"
-                                                className="h-4 w-4"
+                                                className="
+                                                    h-4
+                                                    w-4
+                                                    transition-transform
+                                                    duration-300
+                                                    group-hover:translate-x-0.5
+                                                "
                                                 fill="none"
                                                 stroke="currentColor"
                                                 strokeWidth="1.8"
@@ -527,7 +608,7 @@ export default function SupportPage() {
                                             </svg>
                                         </span>
 
-                                    </a>
+                                    </button>
                                 </div>
 
                             </div>
@@ -542,15 +623,18 @@ export default function SupportPage() {
                 <section
                     dir="rtl"
                     className="
-                        relative
-                        overflow-hidden
-                        px-4
-                        py-12
-                        sm:px-6
-                        sm:py-14
-                        md:py-20
-                        lg:px-10
-                    "
+        relative
+        isolate
+        z-20
+        bg-white
+        px-4
+        py-12
+        sm:bg-transparent
+        sm:px-6
+        sm:py-14
+        md:py-20
+        lg:px-10
+    "
                 >
                     <div className="container-luxury relative">
 
@@ -566,11 +650,11 @@ export default function SupportPage() {
 
                                     <span
                                         className="
-                                            text-[11px]
-                                            font-medium
-                                            tracking-[0.3em]
-                                            text-blue-400
-                                        "
+                            text-[11px]
+                            font-medium
+                            tracking-[0.3em]
+                            text-blue-400
+                        "
                                     >
                                         FAQ
                                     </span>
@@ -581,24 +665,24 @@ export default function SupportPage() {
 
                                 <h2
                                     className="
-                                        text-2xl
-                                        font-bold
-                                        text-navy-950
-                                        sm:text-3xl
-                                    "
+                        text-2xl
+                        font-bold
+                        text-navy-950
+                        sm:text-3xl
+                    "
                                 >
                                     سوالات متداول
                                 </h2>
 
                                 <p
                                     className="
-                                        mx-auto
-                                        mt-3
-                                        max-w-xl
-                                        text-sm
-                                        leading-7
-                                        text-slate-500
-                                    "
+                        mx-auto
+                        mt-3
+                        max-w-xl
+                        text-sm
+                        leading-7
+                        text-slate-500
+                    "
                                 >
                                     پاسخ برخی از سوالات رایج شما را در این بخش
                                     قرار داده‌ایم تا بتوانید سریع‌تر اطلاعات
@@ -618,117 +702,109 @@ export default function SupportPage() {
                                         <div
                                             key={faq.question}
                                             className="
-                                                overflow-hidden
-                                                rounded-2xl
-                                                border
-                                                border-slate-200/80
-                                                bg-white/90
-                                                shadow-[0_8px_30px_rgba(15,23,42,0.04)]
-                                                backdrop-blur-sm
-                                                transition-all
-                                                duration-300
-                                                hover:border-blue-100
-                                                hover:shadow-[0_12px_35px_rgba(15,23,42,0.07)]
-                                            "
+                                relative
+                                z-30
+                                overflow-hidden
+                                rounded-2xl
+                                border
+                                border-slate-200
+                                bg-white
+                                shadow-[0_8px_30px_rgba(15,23,42,0.04)]
+                                [transform:translateZ(0)]
+                                [backface-visibility:hidden]
+                                transition-colors
+                                duration-300
+                                hover:border-blue-100
+                            "
                                         >
-
-                                            {/* Question */}
 
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     setOpenFaq(
-                                                        isOpen
-                                                            ? null
-                                                            : index
+                                                        isOpen ? null : index
                                                     )
                                                 }
                                                 className="
-                                                    flex
-                                                    w-full
-                                                    items-center
-                                                    justify-between
-                                                    gap-4
-                                                    px-4
-                                                    py-4
-                                                    text-right
-                                                    sm:px-5
-                                                    sm:py-5
-                                                "
+                                    flex
+                                    w-full
+                                    items-center
+                                    justify-between
+                                    gap-4
+                                    px-4
+                                    py-4
+                                    text-right
+                                    sm:px-5
+                                    sm:py-5
+                                "
                                                 aria-expanded={isOpen}
                                             >
 
                                                 <span
                                                     className="
-                                                        text-sm
-                                                        font-medium
-                                                        leading-6
-                                                        text-navy-950
-                                                    "
+                                        text-sm
+                                        font-medium
+                                        leading-6
+                                        text-navy-950
+                                    "
                                                 >
                                                     {faq.question}
                                                 </span>
 
-                                                {/* Arrow */}
-
                                                 <span
                                                     className="
-                                                        flex
-                                                        h-9
-                                                        w-9
-                                                        shrink-0
-                                                        items-center
-                                                        justify-center
-                                                        rounded-full
-                                                        bg-blue-50
-                                                    "
+                                        flex
+                                        h-9
+                                        w-9
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-full
+                                        bg-blue-50
+                                    "
                                                 >
                                                     <ChevronDown
                                                         className={`
-                                                            h-4
-                                                            w-4
-                                                            text-blue-700
-                                                            transition-transform
-                                                            duration-300
-                                                            ${
-                                                                isOpen
-                                                                    ? 'rotate-180'
-                                                                    : ''
+                                            h-4
+                                            w-4
+                                            text-blue-700
+                                            transition-transform
+                                            duration-300
+                                            ${isOpen
+                                                                ? 'rotate-180'
+                                                                : ''
                                                             }
-                                                        `}
+                                        `}
                                                     />
                                                 </span>
 
                                             </button>
 
-                                            {/* Answer */}
-
                                             <div
                                                 className={`
-                                                    grid
-                                                    transition-all
-                                                    duration-300
-                                                    ${
-                                                        isOpen
-                                                            ? 'grid-rows-[1fr] opacity-100'
-                                                            : 'grid-rows-[0fr] opacity-0'
+                                    grid
+                                    transition-[grid-template-rows]
+                                    duration-300
+                                    ${isOpen
+                                                        ? 'grid-rows-[1fr]'
+                                                        : 'grid-rows-[0fr]'
                                                     }
-                                                `}
+                                `}
                                             >
                                                 <div className="overflow-hidden">
 
                                                     <p
                                                         className="
-                                                            border-t
-                                                            border-slate-100
-                                                            px-4
-                                                            pb-5
-                                                            pt-4
-                                                            text-sm
-                                                            leading-7
-                                                            text-slate-500
-                                                            sm:px-5
-                                                        "
+                                            border-t
+                                            border-slate-100
+                                            px-4
+                                            pb-5
+                                            pt-4
+                                            text-sm
+                                            leading-7
+                                            text-slate-500
+                                            sm:px-5
+                                        "
                                                     >
                                                         {faq.answer}
                                                     </p>

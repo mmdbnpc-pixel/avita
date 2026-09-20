@@ -234,8 +234,8 @@ export default function ProductsPage() {
       product.discountPrice !==
         undefined
         ? String(
-            product.discountPrice
-          )
+          product.discountPrice
+        )
         : ''
     );
 
@@ -249,7 +249,7 @@ export default function ProductsPage() {
 
     setImages(
       product.images?.join('\n') ??
-        ''
+      ''
     );
     setSelectedImageFiles([]);
 
@@ -267,7 +267,7 @@ export default function ProductsPage() {
 
     setTags(
       product.tags?.join(', ') ??
-        ''
+      ''
     );
 
     setSpecifications(
@@ -402,13 +402,13 @@ export default function ProductsPage() {
 
     const calculatedDiscountPercent =
       numericDiscount &&
-      numericPrice > 0
+        numericPrice > 0
         ? Math.round(
-            (1 -
-              numericDiscount /
-                numericPrice) *
-              100
-          )
+          (1 -
+            numericDiscount /
+            numericPrice) *
+          100
+        )
         : undefined;
 
     const productData: Product = {
@@ -514,6 +514,21 @@ export default function ProductsPage() {
     }
   };
 
+  const handleDeleteImage = (
+    product: Product,
+    imageIndex: number
+  ) => {
+    const updatedImages = (
+      product.images ?? []
+    ).filter(
+      (_, index) => index !== imageIndex
+    );
+
+    updateProduct(product.id, {
+      ...product,
+      images: updatedImages,
+    });
+  };
   return (
     <div
       dir="rtl"
@@ -599,7 +614,7 @@ export default function ProductsPage() {
 
             <tbody>
               {filteredProducts.length ===
-              0 ? (
+                0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -618,21 +633,34 @@ export default function ProductsPage() {
                       <td className="p-4">
                         <div className="flex items-center gap-3">
 
-                          {product.images?.[0] ? (
-                            <img
-                              src={
-                                product.images[0]
-                              }
-                              alt={
-                                product.name
-                              }
-                              className="h-12 w-12 rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-ivory-100 text-xs text-gray-400">
-                              بدون تصویر
-                            </div>
-                          )}
+                          <div className="relative h-12 w-12 shrink-0">
+                            {product.images?.[0] ? (
+                              <>
+                                <img
+                                  src={product.images[0]}
+                                  alt={product.name}
+                                  className="h-12 w-12 rounded-lg object-cover"
+                                />
+
+                                {/* حذف فقط عکس */}
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDeleteImage(product, 0)
+                                  }
+                                  className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition hover:bg-red-700"
+                                  aria-label="حذف عکس محصول"
+                                  title="حذف عکس"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              </>
+                            ) : (
+                              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-ivory-100 text-xs text-gray-400">
+                                بدون تصویر
+                              </div>
+                            )}
+                          </div>
 
                           <span className="max-w-[220px] truncate font-medium text-navy-900">
                             {product.name}
@@ -648,7 +676,7 @@ export default function ProductsPage() {
                       <td className="p-4 text-gray-500">
                         {
                           categoryLabels[
-                            product.category
+                          product.category
                           ]
                         }
                       </td>
@@ -656,7 +684,7 @@ export default function ProductsPage() {
                       <td className="whitespace-nowrap p-4 text-gray-600">
                         {formatPrice(
                           product.discountPrice ??
-                            product.price
+                          product.price
                         )}
                       </td>
 
@@ -673,7 +701,7 @@ export default function ProductsPage() {
                           <Badge>
                             {
                               badgeLabels[
-                                product.badge
+                              product.badge
                               ]
                             }
                           </Badge>
@@ -844,9 +872,9 @@ export default function ProductsPage() {
                       setGender(
                         event.target
                           .value as
-                          | 'women'
-                          | 'men'
-                          | 'unisex'
+                        | 'women'
+                        | 'men'
+                        | 'unisex'
                       )
                     }
                     className="w-full rounded-xl border border-ivory-300 bg-white px-4 py-3 text-sm text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-900/10"
@@ -966,8 +994,8 @@ export default function ProductsPage() {
                       setBadge(
                         event.target
                           .value as
-                          | ProductBadge
-                          | ''
+                        | ProductBadge
+                        | ''
                       )
                     }
                     className="w-full rounded-xl border border-ivory-300 bg-white px-4 py-3 text-sm text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-900/10"
