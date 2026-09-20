@@ -71,11 +71,13 @@ function fileToDataUrl(file: File): Promise<string> {
 
 export default function ProductsPage() {
   const {
-    products,
-    addProduct,
-    updateProduct,
-    deleteProduct,
-  } = useAdmin();
+  products,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  collectionItems,
+  addCollectionItem,
+} = useAdmin();
 
   const [search, setSearch] =
     useState('');
@@ -523,7 +525,7 @@ export default function ProductsPage() {
     ).filter(
       (_, index) => index !== imageIndex
     );
-
+    
     updateProduct(product.id, {
       ...product,
       images: updatedImages,
