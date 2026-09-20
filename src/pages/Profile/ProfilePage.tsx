@@ -1,4 +1,3 @@
-
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -44,6 +43,7 @@ const WHATSAPP_SUPPORT_URL =
 
 export default function ProfilePage() {
   const { products, orders } = useAdmin();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -88,6 +88,7 @@ export default function ProfilePage() {
   }, [location.search]);
 
   const [editing, setEditing] = useState(false);
+
   const [showLogoutModal, setShowLogoutModal] =
     useState(false);
 
@@ -119,17 +120,25 @@ export default function ProfilePage() {
     );
   }
 
-  const favoriteProducts = products.filter((p) =>
-    favorites.includes(p.id)
+  const favoriteProducts = products.filter((product) =>
+    favorites.includes(product.id)
   );
 
+  /*
+   * سفارش‌های کاربر مستقیماً از AdminContext خوانده می‌شوند.
+   *
+   * بنابراین وقتی ادمین وضعیت سفارش را تغییر دهد،
+   * وضعیت جدید همین‌جا نیز نمایش داده می‌شود.
+   */
   const userOrders = orders.filter(
-    (o) => o.phone === user?.phone
+    (order) => order.phone === user?.phone
   );
 
   const handleSave = () => {
     updateUser(form);
+
     setEditing(false);
+
     showToast(
       'اطلاعات به‌روزرسانی شد',
       'success'
@@ -138,10 +147,14 @@ export default function ProfilePage() {
 
   const handleLogout = () => {
     logout();
+
+    setShowLogoutModal(false);
+
     showToast(
       'از حساب خارج شدید',
       'info'
     );
+
     navigate('/login');
   };
 
@@ -207,86 +220,147 @@ export default function ProfilePage() {
 
     return (
       <div className="space-y-4">
-        {userOrders.map((order) => (
-          <div
-            key={order.id}
-            className="rounded-xl border border-ivory-200 bg-white p-4"
-          >
-            {/* Order Header */}
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium text-navy-900">
-                  {order.orderNumber}
-                </p>
+        {userOrders.map((order) => {
+          const isCancelled =
+            order.status === 'cancelled';
 
-                <p className="mt-1 text-xs text-gray-400">
-                  {formatDate(order.createdAt)}
-                </p>
-              </div>
-
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-medium ${orderStatusColors[order.status]}`}
+          return (
+            <div
+              key={order.id}
+              className={`overflow-hidden rounded-xl border bg-white p-4 transition-all ${
+                isCancelled
+                  ? 'border-red-100 bg-red-50/20'
+                  : 'border-ivory-200'
+              }`}
+            >
+              {/* تمام محتوای سفارش لغوشده کمرنگ می‌شود */}
+              <div
+                className={
+                  isCancelled
+                    ? 'opacity-50'
+                    : ''
+                }
               >
-                {orderStatusLabels[order.status]}
-              </span>
-            </div>
+                {/* ================= ORDER HEADER ================= */}
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-medium text-navy-900">
+                      {order.orderNumber}
+                    </p>
 
-            {/* Order Items */}
-            <div className="mt-3 space-y-2 border-t border-ivory-200 pt-3">
-              {order.items.map((item, index) => (
-                <div
-                  key={`${item.productId}-${index}`}
-                  className="flex items-center justify-between gap-4 text-xs"
-                >
-                  <span className="min-w-0 text-gray-600">
-                    {item.name} ×{' '}
-                    {toPersianDigits(
-                      item.quantity
-                    )}
-                  </span>
+                    <p className="mt-1 text-xs text-gray-400">
+                      {formatDate(
+                        order.createdAt
+                      )}
+                    </p>
+                  </div>
 
-                  <span className="shrink-0 font-medium text-navy-900">
-                    {formatPrice(
-                      item.price *
-                        item.quantity
-                    )}
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      orderStatusColors[
+                        order.status
+                      ]
+                    }`}
+                  >
+                    {
+                      orderStatusLabels[
+                        order.status
+                      ]
+                    }
                   </span>
                 </div>
-              ))}
 
-              {/* Shipping */}
-              <div className="flex items-center justify-between pt-2 text-xs">
-                <span className="text-gray-500">
-                  هزینه ارسال
-                </span>
+                {/* ================= ORDER ITEMS ================= */}
+                <div className="mt-3 space-y-2 border-t border-ivory-200 pt-3">
+                  {order.items.map(
+                    (item, index) => (
+                      <div
+                        key={`${item.productId}-${index}`}
+                        className="flex items-center justify-between gap-4 text-xs"
+                      >
+                        <span className="min-w-0 text-gray-600">
+                          {item.name} ×{' '}
+                          {toPersianDigits(
+                            item.quantity
+                          )}
+                        </span>
 
-                <span className="font-medium text-gray-700">
-                  {order.shipping === 0
-                    ? 'رایگان'
-                    : formatPrice(
-                        order.shipping
+                        <span className="shrink-0 font-medium text-navy-900">
+                          {formatPrice(
+                            item.price *
+                              item.quantity
+                          )}
+                        </span>
+                      </div>
+                    )
+                  )}
+
+                  {/* ================= SHIPPING ================= */}
+                  <div className="flex items-center justify-between pt-2 text-xs">
+                    <span className="text-gray-500">
+                      هزینه ارسال
+                    </span>
+
+                    <span className="font-medium text-gray-700">
+                      {order.shipping === 0
+                        ? 'رایگان'
+                        : formatPrice(
+                            order.shipping
+                          )}
+                    </span>
+                  </div>
+
+                  {/* ================= FINAL PRICE ================= */}
+                  <div className="flex items-center justify-between border-t border-ivory-200 pt-2">
+                    <span className="text-sm font-medium text-gray-600">
+                      مبلغ نهایی
+                    </span>
+
+                    <span className="text-sm font-bold text-navy-900">
+                      {formatPrice(
+                        order.total
                       )}
-                </span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* ================= TRACKING CODE ================= */}
+                {order.trackingCode && (
+                  <div className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-blue-100 bg-blue-50/70 px-3 py-2.5 text-xs">
+                    <span className="text-gray-500">
+                      شماره پیگیری
+                    </span>
+
+                    <span
+                      className="font-semibold text-navy-900"
+                      dir="ltr"
+                    >
+                      {toPersianDigits(
+                        order.trackingCode
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {/* ================= STATUS TRACKER ================= */}
+                <div className="mt-4">
+                  <OrderStatusTracker
+                    status={order.status}
+                  />
+                </div>
               </div>
 
-              {/* Final Price */}
-              <div className="flex items-center justify-between border-t border-ivory-200 pt-2">
-                <span className="text-sm font-medium text-gray-600">
-                  مبلغ نهایی
-                </span>
-
-                <span className="text-sm font-bold text-navy-900">
-                  {formatPrice(order.total)}
-                </span>
-              </div>
+              {/* ================= CANCELLED LABEL ================= */}
+              {isCancelled && (
+                <div className="mt-4 border-t border-red-100 pt-3 text-center">
+                  <span className="text-sm font-semibold text-red-600">
+                    سفارش لغو شده
+                  </span>
+                </div>
+              )}
             </div>
-
-            {/* فقط در تاریخچه سفارش */}
-            <OrderStatusTracker
-              status={order.status}
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
@@ -781,4 +855,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

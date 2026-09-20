@@ -31,7 +31,7 @@ export default function Footer() {
               <span className="text-sm font-medium text-gold-400">
                 اویتا
               </span>
-            </div>اس
+            </div>
 
             {/* کاهش leading-7 به leading-6 */}
             <p className="mx-auto max-w-md text-sm leading-6 text-ivory-300">
