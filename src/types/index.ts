@@ -2,12 +2,18 @@ export type Category = 'women' | 'men' | 'sport';
 
 export type ProductBadge = 'new' | 'bestseller' | 'special' | 'discount';
 
+export interface ProductColor {
+  id: string;
+  name: string;
+  hex: string;
+  stock: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   slug: string;
   category: Category;
-  gender: 'women' | 'men' | 'unisex';
   price: number;
   discountPrice?: number;
   discountPercent?: number;
@@ -15,7 +21,7 @@ export interface Product {
   description: string;
   specifications: { label: string; value: string }[];
   material: string;
-  color: string;
+  colors: ProductColor[];
   size?: string;
   stock: number;
   sku: string;
@@ -32,6 +38,9 @@ export interface Product {
 export interface CartItem {
   productId: string;
   quantity: number;
+  colorId?: string;
+  colorName?: string;
+  colorHex?: string;
 }
 
 export interface Review {
@@ -76,7 +85,14 @@ export interface Order {
   city: string;
   address: string;
   postalCode: string;
-  items: { productId: string; name: string; quantity: number; price: number }[];
+  items: {
+    productId: string;
+    name: string;
+    quantity: number;
+    price: number;
+    colorName?: string;
+    colorHex?: string;
+  }[];
   subtotal: number;
   shipping: number;
   discount: number;

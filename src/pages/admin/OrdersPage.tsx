@@ -9,6 +9,7 @@ import {
   X,
   Save,
   Check,
+  XCircle,
 } from 'lucide-react';
 
 import { useAdmin } from '@/context/AdminContext';
@@ -32,10 +33,6 @@ import type {
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 
-/*
- * فقط این ۴ وضعیت برای تغییر وضعیت سفارش
- * در منوی انتخاب نمایش داده می‌شوند.
- */
 const ORDER_STATUS_FLOW: OrderStatus[] = [
   'preparing',
   'shipped',
@@ -43,33 +40,11 @@ const ORDER_STATUS_FLOW: OrderStatus[] = [
   'cancelled',
 ];
 
-const STATUS_DESCRIPTIONS: Record<
-  string,
-  string
-> = {
-  preparing:
-    'سفارش در حال آماده‌سازی برای ارسال است.',
-
-  shipped:
-    'سفارش تحویل شرکت حمل شده و در مسیر مشتری است.',
-
-  delivered:
-    'سفارش با موفقیت به مشتری تحویل داده شده است.',
-
-  cancelled:
-    'این سفارش توسط مدیریت لغو شده است.',
-};
-
-/*
- * مشخص می‌کند آیا وضعیت سفارش
- * قابل انتخاب در Select است یا خیر.
- */
-const isEditableStatus = (
-  status: OrderStatus
-) => {
-  return ORDER_STATUS_FLOW.includes(
-    status
-  );
+const STATUS_DESCRIPTIONS: Record<string, string> = {
+  preparing: 'سفارش در حال آماده‌سازی برای ارسال است.',
+  shipped: 'سفارش تحویل شرکت حمل شده و در مسیر مشتری است.',
+  delivered: 'سفارش با موفقیت به مشتری تحویل داده شده است.',
+  cancelled: 'این سفارش توسط مدیریت لغو شده است.',
 };
 
 export default function OrdersPage() {
@@ -78,9 +53,7 @@ export default function OrdersPage() {
     updateOrder,
   } = useAdmin();
 
-  const [search, setSearch] =
-    useState('');
-
+  const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] =
     useState('all');
 
@@ -93,28 +66,23 @@ export default function OrdersPage() {
   const [trackingCode, setTrackingCode] =
     useState('');
 
-  /*
-   * فیلتر سفارش‌ها
-   */
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      const query =
-        search.trim().toLowerCase();
+      const query = search.trim();
 
       const matchesSearch =
         !query ||
         order.orderNumber
           .toLowerCase()
-          .includes(query) ||
+          .includes(query.toLowerCase()) ||
         order.customerName
           .toLowerCase()
-          .includes(query) ||
+          .includes(query.toLowerCase()) ||
         order.phone.includes(query);
 
       const matchesStatus =
         statusFilter === 'all' ||
-        order.status ===
-          statusFilter;
+        order.status === statusFilter;
 
       return (
         matchesSearch &&
@@ -127,79 +95,42 @@ export default function OrdersPage() {
     statusFilter,
   ]);
 
-  /*
-   * باز کردن جزئیات سفارش
-   */
-  const openOrder = (
-    order: Order
-  ) => {
+  const openOrder = (order: Order) => {
     setSelectedOrder(order);
-
-    /*
-     * اگر وضعیت سفارش یکی از چهار وضعیت
-     * قابل ویرایش باشد همان وضعیت انتخاب می‌شود.
-     *
-     * اگر pending_payment یا paid باشد،
-     * Select خالی نمی‌شود و به صورت
-     * وضعیت فعلی نمایش داده خواهد شد.
-     */
-    setStatus(
-      isEditableStatus(order.status)
-        ? order.status
-        : 'preparing'
-    );
-
+    setStatus(order.status);
     setTrackingCode(
       order.trackingCode ?? ''
     );
   };
 
-  /*
-   * بستن Modal
-   */
   const closeOrder = () => {
     setSelectedOrder(null);
     setTrackingCode('');
   };
 
   /*
-   * ذخیره تغییرات سفارش
+   * تغییر وضعیت فقط از همین قسمت انجام می‌شود.
+   *
+   * AdminContext مقدار جدید status را در orders ذخیره می‌کند.
+   * چون صفحه حساب کاربر نیز همان orders را از AdminContext می‌خواند،
+   * OrderStatusTracker به صورت خودکار وضعیت جدید را نمایش می‌دهد.
    */
   const handleSave = () => {
     if (!selectedOrder) {
       return;
     }
 
-    /*
-     * اگر وضعیت فعلی سفارش
-     * pending_payment یا paid باشد،
-     * وضعیت آن را بدون تغییر نگه می‌داریم.
-     */
-    const nextStatus =
-      isEditableStatus(
-        selectedOrder.status
-      )
-        ? status
-        : selectedOrder.status;
-
     updateOrder(
       selectedOrder.id,
       {
-        status: nextStatus,
-
+        status,
         trackingCode:
-          trackingCode.trim() ||
-          undefined,
+          trackingCode.trim() || undefined,
       }
     );
 
     alert(
-      `وضعیت سفارش ${
-        selectedOrder.orderNumber
-      } به «${
-        orderStatusLabels[
-          nextStatus
-        ]
+      `وضعیت سفارش ${selectedOrder.orderNumber} به «${orderStatusLabels[status]
       }» تغییر کرد.`
     );
 
@@ -207,7 +138,7 @@ export default function OrdersPage() {
   };
 
   /*
-   * تغییر سریع وضعیت
+   * تغییر سریع وضعیت بدون نیاز به باز کردن Modal
    */
   const handleQuickStatusChange = (
     order: Order,
@@ -217,39 +148,23 @@ export default function OrdersPage() {
       order.id,
       {
         status: newStatus,
-
         trackingCode:
-          order.trackingCode ||
-          undefined,
+          order.trackingCode ?? undefined,
       }
     );
   };
 
-  /*
-   * لغو سفارش
-   */
   const handleCancelOrder = () => {
     if (!selectedOrder) {
       return;
     }
 
-    updateOrder(
-      selectedOrder.id,
-      {
-        status: 'cancelled',
+    updateOrder(selectedOrder.id, {
+      status: 'cancelled',
+      trackingCode: trackingCode.trim() || undefined,
+    });
 
-        trackingCode:
-          trackingCode.trim() ||
-          undefined,
-      }
-    );
-
-    alert(
-      `سفارش ${
-        selectedOrder.orderNumber
-      } با موفقیت لغو شد.`
-    );
-
+    alert(`سفارش ${selectedOrder.orderNumber} با موفقیت لغو شد.`);
     closeOrder();
   };
 
@@ -258,8 +173,7 @@ export default function OrdersPage() {
       dir="rtl"
       className="min-w-0 w-full"
     >
-      {/* ================= HEADER ================= */}
-
+      {/* Header */}
       <div className="mb-6">
         <h2 className="text-xl font-bold text-navy-900">
           مدیریت سفارش‌ها
@@ -270,27 +184,20 @@ export default function OrdersPage() {
         </p>
       </div>
 
-      {/* ================= SEARCH ================= */}
-
+      {/* Search / Filter */}
       <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row">
         <div className="relative min-w-0 flex-1">
-          <Search
-            className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-          />
+          <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
 
           <input
             value={search}
             onChange={(event) =>
-              setSearch(
-                event.target.value
-              )
+              setSearch(event.target.value)
             }
             placeholder="جستجو بر اساس شماره، نام یا موبایل..."
             className="w-full rounded-full border border-ivory-300 bg-white py-3 pr-11 pl-4 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900/10"
           />
         </div>
-
-        {/* Status Filter */}
 
         <select
           value={statusFilter}
@@ -311,19 +218,14 @@ export default function OrdersPage() {
                 key={key}
                 value={key}
               >
-                {
-                  orderStatusLabels[
-                    key
-                  ]
-                }
+                {orderStatusLabels[key]}
               </option>
             )
           )}
         </select>
       </div>
 
-      {/* ================= ORDERS TABLE ================= */}
-
+      {/* Orders Table */}
       <div className="overflow-hidden rounded-2xl border border-ivory-200 bg-white">
         <div className="w-full overflow-x-auto">
           <table className="min-w-[1000px] w-full text-sm">
@@ -360,8 +262,7 @@ export default function OrdersPage() {
             </thead>
 
             <tbody>
-              {filteredOrders.length ===
-              0 ? (
+              {filteredOrders.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -375,128 +276,80 @@ export default function OrdersPage() {
                   (order) => (
                     <tr
                       key={order.id}
-                      className={`border-b border-ivory-100 last:border-0 ${
-                        order.status ===
-                        'cancelled'
-                          ? 'bg-red-50/30'
-                          : ''
-                      }`}
+                      className="border-b border-ivory-100 last:border-0"
                     >
-                      {/* شماره سفارش */}
-
+                      {/* Order Number */}
                       <td className="whitespace-nowrap p-4 font-medium text-navy-900">
                         {order.orderNumber}
                       </td>
 
-                      {/* مشتری */}
-
+                      {/* Customer */}
                       <td className="whitespace-nowrap p-4 text-gray-600">
-                        {
-                          order.customerName
-                        }
+                        {order.customerName}
                       </td>
 
-                      {/* مبلغ */}
-
+                      {/* Total */}
                       <td className="whitespace-nowrap p-4 text-gray-600">
                         {formatPrice(
                           order.total
                         )}
                       </td>
 
-                      {/* وضعیت فعلی */}
-
+                      {/* Current Status */}
                       <td className="p-4">
                         <span
-                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                            orderStatusColors[
-                              order.status
+                          className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${orderStatusColors[
+                            order.status
                             ]
-                          }`}
+                            }`}
                         >
                           {
                             orderStatusLabels[
-                              order.status
+                            order.status
                             ]
                           }
                         </span>
                       </td>
 
-                      {/* تغییر سریع وضعیت */}
-
+                      {/* Quick Status */}
                       <td className="p-4">
-                        {isEditableStatus(
-                          order.status
-                        ) ? (
-                          <select
-                            value={
-                              order.status
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              handleQuickStatusChange(
-                                order,
-                                event
-                                  .target
-                                  .value as OrderStatus
-                              )
-                            }
-                            className="w-full min-w-[180px] rounded-xl border border-ivory-300 bg-white px-3 py-2 text-xs text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-900/10"
-                          >
-                            {ORDER_STATUS_FLOW.map(
-                              (key) => (
-                                <option
-                                  key={key}
-                                  value={key}
-                                >
-                                  {
-                                    orderStatusLabels[
-                                      key
-                                    ]
-                                  }
-                                </option>
-                              )
-                            )}
-                          </select>
-                        ) : (
-                          /*
-                           * برای pending_payment و paid
-                           * دیگر Select خالی نمایش داده نمی‌شود.
-                           */
-                          <span
-                            className={`inline-flex min-w-[180px] items-center justify-center rounded-xl px-3 py-2 text-xs font-medium ${
-                              orderStatusColors[
-                                order.status
-                              ]
-                            }`}
-                          >
-                            {
-                              orderStatusLabels[
-                                order.status
-                              ]
-                            }
-                          </span>
-                        )}
+                        <select
+                          value={order.status}
+                          onChange={(event) =>
+                            handleQuickStatusChange(
+                              order,
+                              event.target
+                                .value as OrderStatus
+                            )
+                          }
+                          className="w-full min-w-[180px] rounded-xl border border-ivory-300 bg-white px-3 py-2 text-xs text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-900/10"
+                        >
+                          {ORDER_STATUS_FLOW.map(
+                            (key) => (
+                              <option
+                                key={key}
+                                value={key}
+                              >
+                                {orderStatusLabels[key]}
+                              </option>
+                            )
+                          )}
+                        </select>
                       </td>
 
-                      {/* تاریخ */}
-
+                      {/* Date */}
                       <td className="whitespace-nowrap p-4 text-xs text-gray-400">
                         {formatDate(
                           order.createdAt
                         )}
                       </td>
 
-                      {/* عملیات */}
-
+                      {/* Details */}
                       <td className="p-4">
                         <button
                           type="button"
                           onClick={() =>
-                            openOrder(
-                              order
-                            )
+                            openOrder(order)
                           }
                           className="text-navy-700 transition hover:text-navy-900"
                           aria-label="مشاهده سفارش"
@@ -513,8 +366,7 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* ================= INFO ================= */}
-
+      {/* Information */}
       <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
         <div className="flex items-start gap-3">
           <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-blue-700">
@@ -527,18 +379,15 @@ export default function OrdersPage() {
             </p>
 
             <p className="mt-1 text-xs leading-6 text-gray-500">
-              با تغییر وضعیت سفارش در
-              این بخش، وضعیت جدید در
-              تاریخچه سفارش همان سفارش
-              برای کاربر نیز نمایش داده
-              می‌شود.
+              با تغییر وضعیت سفارش در این بخش، وضعیت جدید
+              در تاریخچه سفارش همان سفارش برای کاربر نمایش داده
+              می‌شود و نیازی به تغییر دستی نوار وضعیت کاربر نیست.
             </p>
           </div>
         </div>
       </div>
 
-      {/* ================= MODAL ================= */}
-
+      {/* Order Modal */}
       {selectedOrder && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
@@ -554,14 +403,11 @@ export default function OrdersPage() {
           <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white p-5 shadow-2xl sm:p-7">
 
             {/* Modal Header */}
-
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-xl font-bold text-navy-900">
                   سفارش{' '}
-                  {
-                    selectedOrder.orderNumber
-                  }
+                  {selectedOrder.orderNumber}
                 </h3>
 
                 <p className="mt-1 text-sm text-gray-500">
@@ -580,8 +426,7 @@ export default function OrdersPage() {
 
             <div className="space-y-5">
 
-              {/* ================= CUSTOMER ================= */}
-
+              {/* Customer */}
               <section className="rounded-2xl border border-ivory-200 p-4 sm:p-6">
                 <h4 className="mb-5 text-lg font-semibold text-navy-900">
                   اطلاعات مشتری
@@ -627,8 +472,7 @@ export default function OrdersPage() {
                 </div>
               </section>
 
-              {/* ================= ITEMS ================= */}
-
+              {/* Items */}
               <section className="rounded-2xl border border-ivory-200 p-4 sm:p-6">
                 <h4 className="mb-5 text-lg font-semibold text-navy-900">
                   اقلام سفارش
@@ -636,27 +480,25 @@ export default function OrdersPage() {
 
                 <div className="space-y-2">
                   {selectedOrder.items.map(
-                    (
-                      item,
-                      index
-                    ) => (
+                    (item, index) => (
                       <div
                         key={`${item.productId}-${index}`}
                         className="flex items-center justify-between gap-4 rounded-xl bg-ivory-100 px-4 py-3"
                       >
                         <span className="min-w-0 break-words text-sm text-navy-700">
-                          {item.name} ×{' '}
-                          {toPersianDigits(
-                            String(
-                              item.quantity
-                            )
+                          <span>{item.name} × {toPersianDigits(String(item.quantity))}</span>
+                          {item.colorName && (
+                            <span className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-400">
+                              <span className="h-3 w-3 rounded-full border border-black/10" style={{ backgroundColor: item.colorHex }} />
+                              رنگ: {item.colorName}
+                            </span>
                           )}
                         </span>
 
                         <span className="shrink-0 whitespace-nowrap text-sm font-medium text-navy-900">
                           {formatPrice(
                             item.price *
-                              item.quantity
+                            item.quantity
                           )}
                         </span>
                       </div>
@@ -665,8 +507,7 @@ export default function OrdersPage() {
                 </div>
               </section>
 
-              {/* ================= PAYMENT ================= */}
-
+              {/* Payment */}
               <section className="rounded-2xl border border-ivory-200 p-4 sm:p-6">
                 <h4 className="mb-5 text-lg font-semibold text-navy-900">
                   خلاصه پرداخت
@@ -684,11 +525,11 @@ export default function OrdersPage() {
                     label="هزینه ارسال"
                     value={
                       selectedOrder.shipping ===
-                      0
+                        0
                         ? 'رایگان'
                         : formatPrice(
-                            selectedOrder.shipping
-                          )
+                          selectedOrder.shipping
+                        )
                     }
                   />
 
@@ -696,11 +537,11 @@ export default function OrdersPage() {
                     label="تخفیف"
                     value={
                       selectedOrder.discount ===
-                      0
+                        0
                         ? '—'
                         : formatPrice(
-                            selectedOrder.discount
-                          )
+                          selectedOrder.discount
+                        )
                     }
                   />
 
@@ -727,8 +568,7 @@ export default function OrdersPage() {
                 </div>
               </section>
 
-              {/* ================= MANAGEMENT ================= */}
-
+              {/* Management */}
               <section className="rounded-2xl border border-ivory-200 p-4 sm:p-6">
                 <h4 className="mb-5 text-lg font-semibold text-navy-900">
                   مدیریت وضعیت سفارش
@@ -736,67 +576,35 @@ export default function OrdersPage() {
 
                 <div className="grid gap-5 sm:grid-cols-2">
 
-                  {/* STATUS */}
-
+                  {/* Status */}
                   <div>
                     <label className="mb-2 block text-sm font-medium text-navy-900">
                       وضعیت سفارش
                     </label>
 
-                    {isEditableStatus(
-                      selectedOrder.status
-                    ) ? (
-                      <select
-                        value={status}
-                        onChange={(event) =>
-                          setStatus(
-                            event.target
-                              .value as OrderStatus
-                          )
-                        }
-                        className="w-full rounded-xl border border-ivory-300 bg-white px-4 py-3 text-sm text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-900/10"
-                      >
-                        {ORDER_STATUS_FLOW.map(
-                          (key) => (
-                            <option
-                              key={key}
-                              value={key}
-                            >
-                              {
-                                orderStatusLabels[
-                                  key
-                                ]
-                              }
-                            </option>
-                          )
-                        )}
-                      </select>
-                    ) : (
-                      <div
-                        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium ${
-                          orderStatusColors[
-                            selectedOrder
-                              .status
-                          ]
-                        }`}
-                      >
-                        <span>
-                          {
-                            orderStatusLabels[
-                              selectedOrder
-                                .status
-                            ]
-                          }
-                        </span>
+                    <select
+                      value={status}
+                      onChange={(event) =>
+                        setStatus(
+                          event.target
+                            .value as OrderStatus
+                        )
+                      }
+                      className="w-full rounded-xl border border-ivory-300 bg-white px-4 py-3 text-sm text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-900/10"
+                    >
+                      {ORDER_STATUS_FLOW.map(
+                        (key) => (
+                          <option
+                            key={key}
+                            value={key}
+                          >
+                            {orderStatusLabels[key]}
+                          </option>
+                        )
+                      )}
+                    </select>
 
-                        <span className="text-xs opacity-70">
-                          وضعیت فعلی
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Preview */}
-
+                    {/* Live Preview */}
                     <div className="mt-4 rounded-xl bg-ivory-100 p-4">
                       <div className="mb-2 flex items-center justify-between gap-3">
                         <span className="text-xs text-gray-500">
@@ -804,15 +612,14 @@ export default function OrdersPage() {
                         </span>
 
                         <span
-                          className={`rounded-full px-3 py-1 text-xs font-medium ${
-                            orderStatusColors[
-                              status
+                          className={`rounded-full px-3 py-1 text-xs font-medium ${orderStatusColors[
+                            status
                             ]
-                          }`}
+                            }`}
                         >
                           {
                             orderStatusLabels[
-                              status
+                            status
                             ]
                           }
                         </span>
@@ -821,73 +628,58 @@ export default function OrdersPage() {
                       <p className="text-xs leading-6 text-gray-500">
                         {
                           STATUS_DESCRIPTIONS[
-                            status
+                          status
                           ]
                         }
                       </p>
                     </div>
                   </div>
 
-                  {/* TRACKING CODE */}
-
+                  {/* Tracking */}
                   <Input
                     label="کد رهگیری ارسال"
-                    value={
-                      trackingCode
-                    }
+                    value={trackingCode}
                     onChange={(event) =>
                       setTrackingCode(
-                        event.target
-                          .value
+                        event.target.value
                       )
                     }
                     dir="ltr"
                   />
                 </div>
 
-                {/* Info */}
-
                 <div className="mt-6 rounded-xl border border-blue-100 bg-blue-50/50 p-4">
                   <p className="text-xs leading-6 text-blue-900">
-                    با ذخیره وضعیت، وضعیت
-                    سفارش در حساب کاربری
-                    مشتری نیز به صورت خودکار
-                    به‌روزرسانی می‌شود.
+                    با ذخیره وضعیت، نوار وضعیت سفارش در
+                    حساب کاربری مشتری نیز به صورت خودکار
+                    به همین مرحله منتقل می‌شود.
                   </p>
                 </div>
 
-                {/* Actions */}
-
                 <div className="mt-6 flex flex-col-reverse gap-3 border-t border-ivory-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
-
-                  {status !==
-                  'cancelled' ? (
+                  {status !== 'cancelled' ? (
                     <button
                       type="button"
-                      onClick={
-                        handleCancelOrder
-                      }
+                      onClick={handleCancelOrder}
                       className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-medium text-red-600 transition hover:bg-red-100"
                     >
+                      <XCircle className="h-4 w-4" />
                       لغو سفارش
                     </button>
                   ) : (
-                    <span className="text-sm font-medium text-red-600">
+                    <span className="inline-flex items-center gap-2 text-sm font-medium text-red-600">
+                      <XCircle className="h-4 w-4" />
                       این سفارش لغو شده است
                     </span>
                   )}
 
-                  <Button
-                    onClick={
-                      handleSave
-                    }
-                  >
+                  <Button onClick={handleSave}>
                     <Save className="h-4 w-4" />
-
                     ذخیره تغییرات
                   </Button>
                 </div>
               </section>
+
             </div>
           </div>
         </div>
@@ -896,9 +688,6 @@ export default function OrdersPage() {
   );
 }
 
-/*
- * اطلاعات عمومی
- */
 function Info({
   label,
   value,
@@ -919,9 +708,6 @@ function Info({
   );
 }
 
-/*
- * ردیف خلاصه پرداخت
- */
 function SummaryRow({
   label,
   value,
@@ -931,9 +717,7 @@ function SummaryRow({
 }) {
   return (
     <div className="flex justify-between gap-4 text-gray-600">
-      <span>
-        {label}
-      </span>
+      <span>{label}</span>
 
       <span className="shrink-0">
         {value}

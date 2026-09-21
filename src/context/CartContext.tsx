@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react';
-import type { CartItem, Product } from '@/types';
+import type { CartItem, Product, ProductColor } from '@/types';
 import { useAdmin } from '@/context/AdminContext';
 
 interface CartState {
@@ -7,38 +7,68 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: 'ADD'; productId: string; quantity?: number }
-  | { type: 'REMOVE'; productId: string }
-  | { type: 'UPDATE_QTY'; productId: string; quantity: number }
+  | { type: 'ADD'; productId: string; quantity?: number; colorId?: string; colorName?: string; colorHex?: string; maxQuantity?: number }
+  | { type: 'REMOVE'; productId: string; colorId?: string }
+  | { type: 'UPDATE_QTY'; productId: string; quantity: number; colorId?: string; maxQuantity?: number }
   | { type: 'CLEAR' }
   | { type: 'INIT'; items: CartItem[] };
 
 const STORAGE_KEY = 'avita_cart';
+
+const itemMatches = (item: CartItem, productId: string, colorId?: string) =>
+  item.productId === productId && (item.colorId ?? '') === (colorId ?? '');
 
 function reducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'INIT':
       return { items: action.items };
     case 'ADD': {
-      const existing = state.items.find((i) => i.productId === action.productId);
+      const existing = state.items.find((item) =>
+        itemMatches(item, action.productId, action.colorId)
+      );
+
       if (existing) {
         return {
-          items: state.items.map((i) =>
-            i.productId === action.productId
-              ? { ...i, quantity: i.quantity + (action.quantity ?? 1) }
-              : i
+          items: state.items.map((item) =>
+            itemMatches(item, action.productId, action.colorId)
+              ? { ...item, quantity: Math.min(item.quantity + (action.quantity ?? 1), action.maxQuantity ?? Number.MAX_SAFE_INTEGER) }
+              : item
           ),
         };
       }
-      return { items: [...state.items, { productId: action.productId, quantity: action.quantity ?? 1 }] };
+
+      return {
+        items: [
+          ...state.items,
+          {
+            productId: action.productId,
+            quantity: Math.min(action.quantity ?? 1, action.maxQuantity ?? Number.MAX_SAFE_INTEGER),
+            colorId: action.colorId,
+            colorName: action.colorName,
+            colorHex: action.colorHex,
+          },
+        ],
+      };
     }
     case 'REMOVE':
-      return { items: state.items.filter((i) => i.productId !== action.productId) };
-    case 'UPDATE_QTY':
-      if (action.quantity < 1) return { items: state.items.filter((i) => i.productId !== action.productId) };
       return {
-        items: state.items.map((i) =>
-          i.productId === action.productId ? { ...i, quantity: action.quantity } : i
+        items: state.items.filter(
+          (item) => !itemMatches(item, action.productId, action.colorId)
+        ),
+      };
+    case 'UPDATE_QTY':
+      if (action.quantity < 1) {
+        return {
+          items: state.items.filter(
+            (item) => !itemMatches(item, action.productId, action.colorId)
+          ),
+        };
+      }
+      return {
+        items: state.items.map((item) =>
+          itemMatches(item, action.productId, action.colorId)
+            ? { ...item, quantity: Math.min(action.quantity, action.maxQuantity ?? Number.MAX_SAFE_INTEGER) }
+            : item
         ),
       };
     case 'CLEAR':
@@ -48,17 +78,24 @@ function reducer(state: CartState, action: CartAction): CartState {
   }
 }
 
+interface DetailedCartItem {
+  product: Product;
+  quantity: number;
+  color?: ProductColor;
+  cartItem: CartItem;
+}
+
 interface CartContextValue {
   items: CartItem[];
-  detailedItems: { product: Product; quantity: number }[];
+  detailedItems: DetailedCartItem[];
   itemCount: number;
   subtotal: number;
   discount: number;
   shipping: number;
   total: number;
-  addToCart: (productId: string, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addToCart: (productId: string, quantity?: number, color?: ProductColor) => void;
+  removeFromCart: (productId: string, colorId?: string) => void;
+  updateQuantity: (productId: string, quantity: number, colorId?: string) => void;
   clearCart: () => void;
 }
 
@@ -71,7 +108,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) dispatch({ type: 'INIT', items: JSON.parse(saved) });
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          dispatch({ type: 'INIT', items: parsed });
+        }
+      }
     } catch {
       /* ignore */
     }
@@ -83,19 +125,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore */
     }
-  }, [state.items, products]);
+  }, [state.items]);
 
   const value = useMemo<CartContextValue>(() => {
     const detailedItems = state.items
-      .map((item) => {
-        const product = products.find((candidate) => candidate.id === item.productId);
-        return product ? { product, quantity: item.quantity } : null;
-      })
-      .filter((x): x is { product: Product; quantity: number } => x !== null);
+      .map((cartItem) => {
+        const product = products.find((candidate) => candidate.id === cartItem.productId);
+        if (!product) return null;
 
-    const itemCount = state.items.reduce((sum, i) => sum + i.quantity, 0);
-    const subtotal = detailedItems.reduce((sum, i) => sum + (i.product.discountPrice ?? i.product.price) * i.quantity, 0);
-    const originalTotal = detailedItems.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+        const color = cartItem.colorId
+          ? product.colors.find((candidate) => candidate.id === cartItem.colorId)
+          : product.colors[0];
+
+        return { product, quantity: cartItem.quantity, color, cartItem };
+      })
+      .filter((item): item is DetailedCartItem => item !== null);
+
+    const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0);
+    const subtotal = detailedItems.reduce(
+      (sum, item) => sum + (item.product.discountPrice ?? item.product.price) * item.quantity,
+      0
+    );
+    const originalTotal = detailedItems.reduce(
+      (sum, item) => sum + item.product.price * item.quantity,
+      0
+    );
     const discount = originalTotal - subtotal;
     const shipping = subtotal > 5000000 || subtotal === 0 ? 0 : 150000;
     const total = subtotal + shipping;
@@ -108,9 +162,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
       discount,
       shipping,
       total,
-      addToCart: (productId, quantity = 1) => dispatch({ type: 'ADD', productId, quantity }),
-      removeFromCart: (productId) => dispatch({ type: 'REMOVE', productId }),
-      updateQuantity: (productId, quantity) => dispatch({ type: 'UPDATE_QTY', productId, quantity }),
+      addToCart: (productId, quantity = 1, color) => {
+        const product = products.find((candidate) => candidate.id === productId);
+        const selectedColor = color ?? product?.colors[0];
+        const maxQuantity = selectedColor?.stock ?? product?.stock ?? Number.MAX_SAFE_INTEGER;
+
+        dispatch({
+          type: 'ADD',
+          productId,
+          quantity,
+          colorId: selectedColor?.id,
+          colorName: selectedColor?.name,
+          colorHex: selectedColor?.hex,
+          maxQuantity,
+        });
+      },
+      removeFromCart: (productId, colorId) =>
+        dispatch({ type: 'REMOVE', productId, colorId }),
+      updateQuantity: (productId, quantity, colorId) => {
+        const product = products.find((candidate) => candidate.id === productId);
+        const selectedColor = colorId
+          ? product?.colors.find((color) => color.id === colorId)
+          : product?.colors[0];
+        const maxQuantity = selectedColor?.stock ?? product?.stock ?? Number.MAX_SAFE_INTEGER;
+
+        dispatch({ type: 'UPDATE_QTY', productId, quantity, colorId, maxQuantity });
+      },
       clearCart: () => dispatch({ type: 'CLEAR' }),
     };
   }, [state.items, products]);

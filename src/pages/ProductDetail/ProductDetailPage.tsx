@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Heart, ShoppingBag, Minus, Plus, Truck, RefreshCw, ShieldCheck,
@@ -16,6 +16,7 @@ import { DetailSkeleton } from '@/components/ui/Skeleton';
 import EmptyState from '@/components/ui/EmptyState';
 import ProductGrid from '@/components/product/ProductGrid';
 import { ProductBadge } from '@/components/ui/Badge';
+import type { ProductColor } from '@/types';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -24,6 +25,7 @@ export default function ProductDetailPage() {
   const product = id ? getProductById(id) : undefined;
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedColorId, setSelectedColorId] = useState<string | undefined>(undefined);
   const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'reviews'>('description');
   const [loading] = useState(false);
 
@@ -34,6 +36,23 @@ export default function ProductDetailPage() {
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+
+  const selectedColor: ProductColor | undefined = product
+    ? product.colors.find((color) => color.id === selectedColorId) ?? product.colors[0]
+    : undefined;
+  const availableStock = selectedColor?.stock ?? product?.stock ?? 0;
+
+  useEffect(() => {
+    setActiveImage(0);
+    setQuantity(1);
+    setSelectedColorId(product?.colors[0]?.id);
+  }, [product?.id, product?.colors]);
+
+  useEffect(() => {
+    if (availableStock > 0 && quantity > availableStock) {
+      setQuantity(availableStock);
+    }
+  }, [availableStock, quantity]);
 
   if (loading) return <div className="pt-32 container-luxury"><DetailSkeleton /></div>;
 
@@ -55,12 +74,12 @@ export default function ProductDetailPage() {
   const fav = isFavorite(product.id);
 
   const handleAddToCart = () => {
-    addToCart(product.id, quantity);
+    addToCart(product.id, quantity, selectedColor);
     showToast('به سبد خرید اضافه شد', 'success');
   };
 
   const handleBuyNow = () => {
-    addToCart(product.id, quantity);
+    addToCart(product.id, quantity, selectedColor);
     navigate('/checkout');
   };
 
@@ -95,8 +114,9 @@ export default function ProductDetailPage() {
                 <button
                   key={i}
                   onClick={() => setActiveImage(i)}
-                  className={`aspect-square overflow-hidden rounded-xl border-2 transition-all ${activeImage === i ? 'border-navy-900' : 'border-transparent opacity-60 hover:opacity-100'
-                    }`}
+                  className={`aspect-square overflow-hidden rounded-xl border-2 transition-all ${
+                    activeImage === i ? 'border-navy-900' : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
                 >
                   <img src={img} alt="" className="h-full w-full object-cover" loading="lazy" />
                 </button>
@@ -135,17 +155,74 @@ export default function ProductDetailPage() {
 
             <p className="mb-6 text-sm leading-relaxed text-gray-600">{product.description}</p>
 
+            {/* Colors */}
+            {product.colors.length > 0 && (
+              <div className="mb-6">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="text-sm font-medium text-navy-900">رنگ:</span>
+                  <span className="text-sm text-gray-500">{selectedColor?.name}</span>
+                  {product.colors.length > 1 && (
+                    <span className="text-xs text-gray-400">· {toPersianDigits(String(product.colors.length))} رنگ</span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4">
+                  {product.colors.map((color) => {
+                    const isSelected = selectedColor?.id === color.id;
+                    const isDisabled = color.stock <= 0;
+
+                    return (
+                      <button
+                        key={color.id}
+                        type="button"
+                        onClick={() => {
+                          if (isDisabled) return;
+                          setSelectedColorId(color.id);
+                          setQuantity(1);
+                        }}
+                        disabled={isDisabled}
+                        aria-label={`انتخاب رنگ ${color.name}`}
+                        title={`${color.name}${isDisabled ? ' - ناموجود' : ''}`}
+                        className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 ${
+                          isSelected
+                            ? 'border-[#1474D4] p-[3px] shadow-[0_0_0_2px_#1474D4]'
+                            : 'border-gray-300 p-[3px] hover:border-gray-500'
+                        } ${isDisabled ? 'cursor-not-allowed opacity-35 grayscale' : 'cursor-pointer'}`}
+                      >
+                        <span
+                          className="flex h-full w-full items-center justify-center rounded-full border border-black/10"
+                          style={{ backgroundColor: color.hex }}
+                        >
+                          {isSelected && (
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="h-5 w-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)]"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                            >
+                              <path d="m5 12 4 4L19 6" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Stock */}
             <div className="mb-6 flex items-center gap-2 text-sm">
-              {product.stock > 0 ? (
+              {availableStock > 0 ? (
                 <>
                   <span className="h-2 w-2 rounded-full bg-green-500" />
-                  <span className="text-green-600">موجود ({toPersianDigits(product.stock)} عدد در انبار)</span>
+                  <span className="text-green-600">موجود ({toPersianDigits(availableStock)} عدد از این رنگ در انبار)</span>
                 </>
               ) : (
                 <>
                   <span className="h-2 w-2 rounded-full bg-red-500" />
-                  <span className="text-red-600">ناموجود</span>
+                  <span className="text-red-600">این رنگ ناموجود است</span>
                 </>
               )}
             </div>
@@ -153,15 +230,15 @@ export default function ProductDetailPage() {
             {/* Quantity & Actions */}
             <div className="mb-6 flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2 rounded-full border border-ivory-300 bg-white px-3 py-2">
-                <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="text-navy-700">
+                <button onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="text-navy-700" disabled={availableStock <= 0}>
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-8 text-center text-sm font-medium">{toPersianDigits(quantity)}</span>
-                <button onClick={() => setQuantity((q) => q + 1)} className="text-navy-700">
+                <button onClick={() => setQuantity((q) => Math.min(availableStock || 1, q + 1))} className="text-navy-700" disabled={availableStock <= 0 || quantity >= availableStock}>
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
-              <Button onClick={handleAddToCart} size="lg" className="flex-1">
+              <Button onClick={handleAddToCart} size="lg" className="flex-1" disabled={availableStock <= 0 || !selectedColor}>
                 <ShoppingBag className="h-4 w-4" />
                 افزودن به سبد خرید
               </Button>
@@ -170,14 +247,15 @@ export default function ProductDetailPage() {
                   toggleFavorite(product.id);
                   showToast(fav ? 'از علاقه‌مندی‌ها حذف شد' : 'به علاقه‌مندی‌ها اضافه شد', 'info');
                 }}
-                className={`flex h-12 w-12 items-center justify-center rounded-full border transition-all ${fav ? 'border-red-500 bg-red-50 text-red-500' : 'border-ivory-300 text-navy-700 hover:border-navy-900'
-                  }`}
+                className={`flex h-12 w-12 items-center justify-center rounded-full border transition-all ${
+                  fav ? 'border-red-500 bg-red-50 text-red-500' : 'border-ivory-300 text-navy-700 hover:border-navy-900'
+                }`}
               >
                 <Heart className={`h-5 w-5 ${fav ? 'fill-current' : ''}`} />
               </button>
             </div>
 
-            <Button onClick={handleBuyNow} variant="gold" size="lg" fullWidth>
+            <Button onClick={handleBuyNow} variant="gold" size="lg" fullWidth disabled={availableStock <= 0 || !selectedColor}>
               خرید محصول
             </Button>
 
@@ -214,10 +292,11 @@ export default function ProductDetailPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as typeof activeTab)}
-                className={`rounded-full px-6 py-2.5 text-sm font-medium transition-all ${activeTab === tab.key
-                  ? 'bg-navy-900 text-ivory-100'
-                  : 'text-navy-700 hover:bg-ivory-200'
-                  }`}
+                className={`rounded-full px-6 py-2.5 text-sm font-medium transition-all ${
+                  activeTab === tab.key
+                    ? 'bg-navy-900 text-ivory-100'
+                    : 'text-navy-700 hover:bg-ivory-200'
+                }`}
               >
                 {tab.label}
               </button>
@@ -229,7 +308,7 @@ export default function ProductDetailPage() {
               <div className="animate-fade-in space-y-4 text-sm leading-relaxed text-gray-600">
                 <p>{product.description}</p>
                 <p>
-                  این محصول از جنس {product.material} با رنگ {product.color}، با بالاترین استانداردهای کیفی تولید شده است.
+                  این محصول از جنس {product.material} با رنگ {selectedColor?.name ?? 'نامشخص'}، با بالاترین استانداردهای کیفی تولید شده است.
                   طراحی ظریف و دقت در جزئیات، این اکسسوری را به انتخابی ماندگار تبدیل می‌کند.
                 </p>
               </div>
@@ -250,7 +329,7 @@ export default function ProductDetailPage() {
                     </tr>
                     <tr className="border-b border-ivory-200">
                       <td className="py-3 pl-4 text-sm font-medium text-navy-900">رنگ</td>
-                      <td className="py-3 text-sm text-gray-600">{product.color}</td>
+                      <td className="py-3 text-sm text-gray-600">{selectedColor?.name ?? '—'}</td>
                     </tr>
                     {product.size && (
                       <tr className="border-b border-ivory-200">
@@ -322,28 +401,8 @@ export default function ProductDetailPage() {
                       onChange={(event) => setReviewText(event.target.value)}
                       rows={4}
                       placeholder="نظر خود را درباره این محصول بنویسید..."
-                      className="
-    block
-    w-full
-    resize-none
-    rounded-xl
-    border
-    border-ivory-300
-    bg-white
-    px-4
-    py-3
-    text-sm
-    leading-7
-    text-navy-900
-    outline-none
-    transition-colors
-    duration-200
-    placeholder:text-gray-400
-    focus:border-navy-900/30
-    focus:bg-white
-    focus:ring-2
-    focus:ring-navy-900/10
-  "
+                      className="w-full appearance-none rounded-xl border border-ivory-300 bg-white px-4 py-3 text-base leading-7 text-navy-900 outline-none transition-colors focus:border-navy-900/30 focus:ring-2 focus:ring-navy-900/10 sm:text-sm"
+                      style={{ WebkitTextSizeAdjust: '100%' }}
                     />
                     <Button type="submit" className="mt-4">
                       {editingReviewId ? 'ذخیره تغییرات' : 'ثبت نظر'}

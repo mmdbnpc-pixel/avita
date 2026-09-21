@@ -38,9 +38,9 @@ export default function CartPage() {
           {/* Items */}
           <div className="lg:col-span-2">
             <div className="space-y-4">
-              {detailedItems.map(({ product, quantity }) => (
+              {detailedItems.map(({ product, quantity, color, cartItem }) => (
                 <div
-                  key={product.id}
+                  key={`${product.id}-${cartItem.colorId ?? 'default'}`}
                   className="flex gap-4 rounded-2xl border border-ivory-200 bg-white p-4"
                 >
                   <Link to={`/products/${product.id}`}>
@@ -60,9 +60,15 @@ export default function CartPage() {
                         <p className="mt-1 text-xs text-gray-400">
                           {product.category === 'women' ? 'زنانه' : product.category === 'men' ? 'مردانه' : 'اسپرت'}
                         </p>
+                        {color && (
+                          <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                            <span className="h-4 w-4 rounded-full border border-black/10" style={{ backgroundColor: color.hex }} />
+                            <span>رنگ: {color.name}</span>
+                          </div>
+                        )}
                       </div>
                       <button
-                        onClick={() => removeFromCart(product.id)}
+                        onClick={() => removeFromCart(product.id, cartItem.colorId)}
                         className="text-gray-400 transition-colors hover:text-red-500"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -70,11 +76,11 @@ export default function CartPage() {
                     </div>
                     <div className="mt-auto flex items-center justify-between">
                       <div className="flex items-center gap-2 rounded-full border border-ivory-300 px-3 py-1.5">
-                        <button onClick={() => updateQuantity(product.id, quantity - 1)} className="text-navy-700">
+                        <button onClick={() => updateQuantity(product.id, quantity - 1, cartItem.colorId)} className="text-navy-700">
                           <Minus className="h-3.5 w-3.5" />
                         </button>
                         <span className="w-6 text-center text-sm font-medium">{toPersianDigits(quantity)}</span>
-                        <button onClick={() => updateQuantity(product.id, quantity + 1)} className="text-navy-700">
+                        <button onClick={() => updateQuantity(product.id, quantity + 1, cartItem.colorId)} className="text-navy-700">
                           <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>

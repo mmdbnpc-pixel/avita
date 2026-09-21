@@ -71,7 +71,7 @@ export default function PaymentSuccessPage() {
               <div className="space-y-3">
                 {order.items.map((item, index) => (
                   <div key={`${item.productId}-${index}`} className="flex items-center justify-between gap-4 text-sm">
-                    <span className="min-w-0 text-gray-600">{item.name} × {toPersianDigits(item.quantity)}</span>
+                    <span className="min-w-0 text-gray-600"><span>{item.name} × {toPersianDigits(item.quantity)}</span>{item.colorName && <span className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-400"><span className="h-3 w-3 rounded-full border border-black/10" style={{ backgroundColor: item.colorHex }} />رنگ: {item.colorName}</span>}</span>
                     <span className="shrink-0 font-medium text-navy-900">{formatPrice(item.price * item.quantity)}</span>
                   </div>
                 ))}

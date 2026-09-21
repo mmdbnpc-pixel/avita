@@ -110,6 +110,21 @@ export default function ProductCard({ product }: { product: Product }) {
         <h3 className="text-sm font-medium text-navy-900 transition-colors group-hover:text-navy-700">
           {product.name}
         </h3>
+        {product.colors.length > 0 && (
+          <div className="mt-1 flex items-center gap-1.5" aria-label="رنگ‌های محصول">
+            {product.colors.slice(0, 5).map((color) => (
+              <span
+                key={color.id}
+                title={color.name}
+                className="h-3.5 w-3.5 rounded-full border border-black/10"
+                style={{ backgroundColor: color.hex }}
+              />
+            ))}
+            {product.colors.length > 5 && (
+              <span className="text-[10px] text-gray-400">+{product.colors.length - 5}</span>
+            )}
+          </div>
+        )}
         <div className="mt-1 flex items-center gap-2">
           {product.discountPrice ? (
             <>

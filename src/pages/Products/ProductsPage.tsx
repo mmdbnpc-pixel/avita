@@ -34,7 +34,6 @@ export default function ProductsPage() {
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(
     initialCategory ? new Set([initialCategory]) : new Set()
   );
-  const [genderFilter, setGenderFilter] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 7000000]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState('newest');
@@ -52,9 +51,6 @@ export default function ProductsPage() {
     }
     if (selectedCategories.size > 0) {
       result = result.filter((p) => selectedCategories.has(p.category));
-    }
-    if (genderFilter !== 'all') {
-      result = result.filter((p) => p.gender === genderFilter || p.gender === 'unisex');
     }
     result = result.filter((p) => {
       const price = p.discountPrice ?? p.price;
@@ -82,7 +78,7 @@ export default function ProductsPage() {
         break;
     }
     return result;
-  }, [products, search, selectedCategories, genderFilter, priceRange, inStockOnly, sortBy]);
+  }, [products, search, selectedCategories, priceRange, inStockOnly, sortBy]);
 
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -112,33 +108,6 @@ export default function ProductsPage() {
                 className="h-4 w-4 rounded border-ivory-300 text-navy-900 focus:ring-navy-900"
               />
               <span className="text-sm text-navy-700">{categoryLabels[cat]}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Gender */}
-      <div>
-        <h4 className="mb-3 text-sm font-semibold text-navy-900">جنسیت</h4>
-        <div className="space-y-2">
-          {[
-            { value: 'all', label: 'همه' },
-            { value: 'women', label: 'زنانه' },
-            { value: 'men', label: 'مردانه' },
-            { value: 'unisex', label: 'اسپرت / یونیسکس' },
-          ].map((g) => (
-            <label key={g.value} className="flex cursor-pointer items-center gap-3">
-              <input
-                type="radio"
-                name="gender"
-                checked={genderFilter === g.value}
-                onChange={() => {
-                  setGenderFilter(g.value);
-                  setCurrentPage(1);
-                }}
-                className="h-4 w-4 border-ivory-300 text-navy-900 focus:ring-navy-900"
-              />
-              <span className="text-sm text-navy-700">{g.label}</span>
             </label>
           ))}
         </div>
