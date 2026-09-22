@@ -57,7 +57,7 @@ export default function Navbar({ onSearchOpen, onCartOpen }: NavbarProps) {
               className="flex items-center transition-transform duration-300 hover:scale-105"
             >
               <img
-                src="/pic-s/avita1.png"
+                src="/pic-s/avita1.webp"
                 alt="AVITA | اویتا"
                 className="h-10 w-auto object-contain sm:h-11"
               />
@@ -143,7 +143,7 @@ export default function Navbar({ onSearchOpen, onCartOpen }: NavbarProps) {
           <div className="absolute inset-y-0 right-0 w-full max-w-sm animate-slide-up overflow-y-auto bg-ivory-100 p-6">
             <div className="mb-8 flex items-center justify-between">
               <img
-                src="/pic-s/avita1.png"
+                src="/pic-s/avita1.webp"
                 alt="AVITA | اویتا"
                 className="h-9 w-auto object-contain"
               />

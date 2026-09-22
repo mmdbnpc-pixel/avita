@@ -7,7 +7,7 @@ const quickLinks = [
   { to: '/about', label: 'درباره ما' },
   { to: '/articles', label: 'مقالات' },
   // نکته: مقدار to برای تماس با ما قبلاً /cart بود، اگر اشتباه تایپی است آن را به /contact تغییر دهید.
-  { to: '/Support ', label: 'پشتیبانی' }, 
+  { to: '/Support ', label: 'پشتیبانی' },
 ];
 
 export default function Footer() {
@@ -41,18 +41,7 @@ export default function Footer() {
 
             {/* Social Media */}
             {/* کاهش mt-7 به mt-5 و سایز آیکون‌ها به h-10 w-10 */}
-            <div className="mt-5 flex items-center justify-center gap-3">
-              {[Instagram, Send, Twitter].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  aria-label="Social Media"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-navy-700 text-ivory-300 transition-all duration-300 hover:border-gold-400 hover:text-gold-400"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
+
           </div>
 
           {/* ================= QUICK LINKS ================= */}
@@ -91,20 +80,25 @@ export default function Footer() {
             {/* کاهش gap-5 به gap-3 و leading-6 به leading-5 */}
             <ul className="flex flex-col items-center gap-3">
 
-              <li className="flex items-center justify-center gap-3 text-sm text-ivory-300">
-                <Phone className="h-4 w-4 shrink-0 text-gold-400" />
-                <span>۰۲۱-۸۸۷۷۶۶۵۵</span>
+              <li className="flex items-center justify-center text-sm text-ivory-300">
+                <a
+                  href="tel:09046184216"
+                  className="flex items-center justify-center gap-3 transition-colors hover:text-gold-400"
+                >
+                  <Phone className="h-4 w-4 shrink-0 text-gold-400" />
+                  <span>09046184216</span>
+                </a>
               </li>
 
               <li className="flex items-center justify-center gap-3 text-sm text-ivory-300">
                 <Mail className="h-4 w-4 shrink-0 text-gold-400" />
-                <span>info@avita.ir</span>
+                <span>avita.acc.ss@gmail.com</span>
               </li>
 
               <li className="flex max-w-xs items-center justify-center gap-3 text-sm leading-5 text-ivory-300">
                 <MapPin className="h-4 w-4 shrink-0 text-gold-400" />
                 <span>
-                 قم / اکسسوری اویتا
+                  قم / اکسسوری اویتا
                 </span>
               </li>
 
@@ -117,7 +111,7 @@ export default function Footer() {
         <div className="mt-8 border-t border-navy-800 pt-6">
 
           <div className="flex flex-col items-center justify-center gap-3 text-center">
-           
+
             {/* Modernito */}
             <a
               href="https://modernitoweb.ir/"
@@ -127,7 +121,7 @@ export default function Footer() {
             >
               طراحی و توسعه توسط مدرنیتو
             </a>
-          
+
             {/* Divider */}
             <span className="h-px w-8 bg-navy-700" />
 

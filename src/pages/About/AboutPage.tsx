@@ -30,7 +30,7 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="relative h-[60vh] overflow-hidden bg-navy-950">
         <img
-          src="/pic-s/6.png"
+          src="/pic-s/6.webp"
           alt="AVITA"
           className="h-full w-full object-cover opacity-50"
         />
