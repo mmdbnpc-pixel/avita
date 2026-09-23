@@ -93,9 +93,11 @@ export default function ProductsPage() {
     setCurrentPage(1);
   };
 
-  const FilterContent = () => (
+  const priceProgress = (priceRange[1] / 7000000) * 100;
+
+  // دسکتاپ: دقیقاً مثل قبل
+  const DesktopFilterContent = () => (
     <div className="space-y-8">
-      {/* Categories */}
       <div>
         <h4 className="mb-3 text-sm font-semibold text-navy-900">دسته‌بندی</h4>
         <div className="space-y-2">
@@ -105,7 +107,7 @@ export default function ProductsPage() {
                 type="checkbox"
                 checked={selectedCategories.has(cat)}
                 onChange={() => toggleCategory(cat)}
-                className="h-4 w-4 rounded border-ivory-300 text-navy-900 focus:ring-navy-900"
+                className="h-4 w-4 rounded border-ivory-300 text-navy-900 accent-navy-900 focus:ring-navy-900"
               />
               <span className="text-sm text-navy-700">{categoryLabels[cat]}</span>
             </label>
@@ -113,7 +115,6 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Price */}
       <div>
         <h4 className="mb-3 text-sm font-semibold text-navy-900">محدوده قیمت</h4>
         <div className="flex items-center justify-between text-xs text-gray-500">
@@ -134,7 +135,6 @@ export default function ProductsPage() {
         />
       </div>
 
-      {/* In stock */}
       <div>
         <label className="flex cursor-pointer items-center gap-3">
           <input
@@ -144,8 +144,122 @@ export default function ProductsPage() {
               setInStockOnly(e.target.checked);
               setCurrentPage(1);
             }}
-            className="h-4 w-4 rounded border-ivory-300 text-navy-900 focus:ring-navy-900"
+            className="h-4 w-4 rounded border-ivory-300 text-navy-900 accent-navy-900 focus:ring-navy-900"
           />
+          <span className="text-sm text-navy-700">فقط کالاهای موجود</span>
+        </label>
+      </div>
+    </div>
+  );
+
+  // موبایل: تیک واضح + نوار رنگی + RTL (از راست به چپ قیمت زیاد می‌شود)
+  const MobileFilterContent = () => (
+    <div className="space-y-8">
+      {/* دسته‌بندی */}
+      <div>
+        <h4 className="mb-3 text-sm font-semibold text-navy-900">دسته‌بندی</h4>
+        <div className="space-y-3">
+          {(Object.keys(categoryLabels) as Category[]).map((cat) => {
+            const isChecked = selectedCategories.has(cat);
+            return (
+              <label key={cat} className="flex cursor-pointer items-center gap-3">
+                <div
+                  className={`relative flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition ${
+                    isChecked
+                      ? 'border-navy-900 bg-navy-900'
+                      : 'border-ivory-300 bg-white'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleCategory(cat)}
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  />
+                  {isChecked && (
+                    <svg
+                      className="h-3.5 w-3.5 text-white"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-sm text-navy-700">{categoryLabels[cat]}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* محدوده قیمت */}
+      <div>
+        <h4 className="mb-3 text-sm font-semibold text-navy-900">محدوده قیمت</h4>
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <span>{formatPrice(priceRange[0])}</span>
+          <span>{formatPrice(priceRange[1])}</span>
+        </div>
+        <input
+          type="range"
+          dir="rtl"
+          min={0}
+          max={7000000}
+          step={500000}
+          value={priceRange[1]}
+          onChange={(e) => {
+            setPriceRange([0, Number(e.target.value)]);
+            setCurrentPage(1);
+          }}
+          style={{ '--range-progress': `${priceProgress}%` } as React.CSSProperties}
+          className="price-range-rtl mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-ivory-200
+            [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5
+            [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full
+            [&::-webkit-slider-thumb]:bg-navy-900 [&::-webkit-slider-thumb]:shadow
+            [&::-webkit-slider-thumb]:border-0
+            [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5
+            [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0
+            [&::-moz-range-thumb]:bg-navy-900"
+        />
+      </div>
+
+      {/* فقط موجود */}
+      <div>
+        <label className="flex cursor-pointer items-center gap-3">
+          <div
+            className={`relative flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition ${
+              inStockOnly
+                ? 'border-navy-900 bg-navy-900'
+                : 'border-ivory-300 bg-white'
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={inStockOnly}
+              onChange={(e) => {
+                setInStockOnly(e.target.checked);
+                setCurrentPage(1);
+              }}
+              className="absolute inset-0 cursor-pointer opacity-0"
+            />
+            {inStockOnly && (
+              <svg
+                className="h-3.5 w-3.5 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+          </div>
           <span className="text-sm text-navy-700">فقط کالاهای موجود</span>
         </label>
       </div>
@@ -206,7 +320,7 @@ export default function ProductsPage() {
           {/* Desktop Filters */}
           <aside className="hidden w-64 shrink-0 lg:block">
             <div className="sticky top-28 rounded-2xl border border-ivory-200 bg-white p-6">
-              <FilterContent />
+              <DesktopFilterContent />
             </div>
           </aside>
 
@@ -239,7 +353,10 @@ export default function ProductsPage() {
       {/* Mobile Filters */}
       {showFilters && (
         <div className="fixed inset-0 z-[70] lg:hidden">
-          <div className="absolute inset-0 animate-fade-in bg-navy-950/60 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
+          <div
+            className="absolute inset-0 animate-fade-in bg-navy-950/60 backdrop-blur-sm"
+            onClick={() => setShowFilters(false)}
+          />
           <div className="absolute inset-x-0 bottom-0 max-h-[80vh] animate-slide-up overflow-y-auto rounded-t-3xl bg-white p-6">
             <div className="mb-6 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-navy-900">فیلترها</h3>
@@ -247,7 +364,7 @@ export default function ProductsPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <FilterContent />
+            <MobileFilterContent />
             <Button fullWidth size="lg" className="mt-8" onClick={() => setShowFilters(false)}>
               مشاهده {filtered.length} محصول
             </Button>
